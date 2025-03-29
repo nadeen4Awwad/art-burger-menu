@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html lang="ar">
-
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Art Burger Menu</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="turn.min.js"></script>
 
@@ -17,10 +15,12 @@
     }
 
     html, body {
+      width: 100vw;
       height: 100vh;
-      background-color: #ebe4d4;
+      background-color: #fdf6e3;
       font-family: Arial, sans-serif;
       overflow: hidden;
+      direction: rtl;
     }
 
     body {
@@ -28,20 +28,15 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 10px 0;
-      text-align: center;
-      direction: rtl;
+      padding: 0;
       position: relative;
+      text-align: center;
     }
 
     #flipbook {
-      width: 800px;
-      max-width: 95vw;
+      width: 100vw;
       height: calc(100vh - 250px);
       margin: 0 auto;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      border-radius: 8px;
-      background-color: #ebe4d4;
       position: relative;
       z-index: 1;
     }
@@ -49,15 +44,20 @@
     .page {
       width: 100%;
       height: 100%;
-      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #fdf6e3;
     }
 
     .page img {
-      width: 100%;
+      width: auto;
+      max-width: 100%;
       height: 100%;
+      max-height: 100%;
       object-fit: contain;
+      background-color: #fdf6e3;
       display: block;
-      background-color: #ebe4d4;
     }
 
     #navigation-buttons {
@@ -69,15 +69,16 @@
     }
 
     .nav-button {
-      background-color: rgba(59, 59, 59, 0.4);
+      pointer-events: all;
+      background-color: rgba(0, 0, 0, 0.3);
       color: white;
       border: none;
       border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      font-size: 28px;
+      width: 48px;
+      height: 48px;
+      font-size: 24px;
       cursor: pointer;
-      transition: 0.3s;
+      transition: background-color 0.3s ease;
     }
 
     .nav-button:hover {
@@ -89,8 +90,7 @@
       justify-content: center;
       gap: 10px;
       flex-wrap: wrap;
-      direction: rtl;
-      padding: 10px 0 5px;
+      padding: 5px 10px;
     }
 
     .thumbnail {
@@ -114,29 +114,42 @@
       object-fit: cover;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 767px) {
       #flipbook {
-        height: calc(100vh - 280px);
+        height: auto;
+        margin-top: 30px; /* زيادة مارجن من الأعلى للموبايل */
+        margin-bottom: 10px;
+        max-height: calc(100vh - 260px);
       }
 
-      .nav-button {
-        width: 40px;
-        height: 40px;
-        font-size: 22px;
-      }
-
-      #navigation-buttons {
-        position: relative;
-        top: auto;
-        left: auto;
-        right: auto;
-        transform: none;
-        margin-top: 15px;
-        justify-content: center;
+      .page img {
+        height: auto;
+        max-height: calc(100vh - 260px);
       }
     }
 
-    @media (min-width: 601px) {
+    @media (min-width: 768px) {
+      #flipbook {
+        width: auto;
+        height: auto;
+        display: inline-block;
+        max-height: 90vh;
+      }
+
+      .page {
+        width: auto;
+        height: auto;
+      }
+
+      .page img {
+        width: auto;
+        height: 90vh;
+        max-height: 90vh;
+        object-fit: contain;
+        border-radius: 10px;
+        background-color: #fdf6e3;
+      }
+
       #navigation-buttons {
         position: absolute;
         top: 50%;
@@ -145,25 +158,22 @@
         justify-content: space-between;
         width: 100%;
         transform: translateY(-50%);
-        padding: 0 20px;
+        padding: 200px;
         pointer-events: none;
       }
 
       .nav-button {
         pointer-events: all;
-        position: relative;
       }
     }
   </style>
 </head>
-
 <body>
-
   <div id="flipbook">
-    <div class="page"><img src="image1.jpeg" alt="Page 1"></div>
-    <div class="page"><img src="image2.jpeg" alt="Page 2"></div>
-    <div class="page"><img src="image3.jpeg" alt="Page 3"></div>
-    <div class="page"><img src="image4.jpeg" alt="Page 4"></div>
+    <div class="page"><img src="image1.jpeg" alt="Page 1" /></div>
+    <div class="page"><img src="image2.jpeg" alt="Page 2" /></div>
+    <div class="page"><img src="image3.jpeg" alt="Page 3" /></div>
+    <div class="page"><img src="image4.jpeg" alt="Page 4" /></div>
   </div>
 
   <div id="navigation-buttons">
@@ -172,10 +182,10 @@
   </div>
 
   <div id="thumbnail-section">
-    <div class="thumbnail active"><img src="image1.jpeg" alt="Thumb 1"></div>
-    <div class="thumbnail"><img src="image2.jpeg" alt="Thumb 2"></div>
-    <div class="thumbnail"><img src="image3.jpeg" alt="Thumb 3"></div>
-    <div class="thumbnail"><img src="image4.jpeg" alt="Thumb 4"></div>
+    <div class="thumbnail active"><img src="image1.jpeg" alt="Thumb 1" /></div>
+    <div class="thumbnail"><img src="image2.jpeg" alt="Thumb 2" /></div>
+    <div class="thumbnail"><img src="image3.jpeg" alt="Thumb 3" /></div>
+    <div class="thumbnail"><img src="image4.jpeg" alt="Thumb 4" /></div>
   </div>
 
   <script>
@@ -186,34 +196,47 @@
       flipbook.turn({
         autoCenter: true,
         display: 'single',
-        direction: 'ltr'
+        direction: 'ltr',
+        when: {
+          turned: function (event, page) {
+            updateThumbnail(page);
+          }
+        }
       });
 
       function updateThumbnail(page) {
         $('.thumbnail').removeClass('active').eq(page - 1).addClass('active');
       }
 
-      function updateNavButtons(page) {
-        $('#nextBtn').show();
-        $('#prevBtn').show();
-      }
+      $('#nextBtn').click(() => {
+        let currentPage = flipbook.turn('page');
+        if (currentPage === totalPages) {
+          flipbook.turn('page', 1);
+        } else {
+          flipbook.turn('next');
+        }
+      });
 
-      $('#nextBtn').click(() => flipbook.turn('next'));
-      $('#prevBtn').click(() => flipbook.turn('previous'));
+      $('#prevBtn').click(() => {
+        let currentPage = flipbook.turn('page');
+        if (currentPage === 1) {
+          flipbook.turn('page', totalPages);
+        } else {
+          flipbook.turn('previous');
+        }
+      });
 
       $('.thumbnail').click(function () {
         const index = $(this).index() + 1;
         flipbook.turn('page', index);
       });
-
-      flipbook.bind('turning', (e, page) => {
-        updateThumbnail(page);
-        updateNavButtons(page);
-      });
-
-      updateNavButtons(totalPages);
     });
-  </script>
 
+    window.onload = function () {
+      document.body.style.transform = "scale(1)";
+      document.body.style.transformOrigin = "0 0";
+      document.body.style.width = "100vw";
+    };
+  </script>
 </body>
 </html>
