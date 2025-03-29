@@ -27,7 +27,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       padding: 10px 0;
       text-align: center;
       direction: rtl;
@@ -37,27 +37,38 @@
     #flipbook {
       width: 800px;
       max-width: 95vw;
-      height: calc(100vh - 160px);
+      height: calc(100vh - 250px);
       margin: 0 auto;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
       border-radius: 8px;
-      direction: rtl;
       background-color: #ebe4d4;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
     }
 
     .page img {
       width: 100%;
       height: 100%;
-      border-radius: 5px;
-      display: block;
       object-fit: contain;
+      display: block;
       background-color: #ebe4d4;
     }
 
+    #navigation-buttons {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 10px;
+    }
+
     .nav-button {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
       background-color: rgba(59, 59, 59, 0.4);
       color: white;
       border: none;
@@ -67,19 +78,10 @@
       font-size: 28px;
       cursor: pointer;
       transition: 0.3s;
-      z-index: 10;
     }
 
     .nav-button:hover {
       background-color: rgba(0, 0, 0, 0.6);
-    }
-
-    #prevBtn {
-      right: calc(2.5vw); /* أو 10px حسب الشاشة */
-    }
-
-    #nextBtn {
-      left: calc(2.5vw);
     }
 
     #thumbnail-section {
@@ -114,7 +116,7 @@
 
     @media (max-width: 600px) {
       #flipbook {
-        height: calc(100vh - 180px);
+        height: calc(100vh - 280px);
       }
 
       .nav-button {
@@ -123,10 +125,33 @@
         font-size: 22px;
       }
 
-      #prevBtn, #nextBtn {
-        top: unset;
-        bottom: 120px;
+      #navigation-buttons {
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
         transform: none;
+        margin-top: 15px;
+        justify-content: center;
+      }
+    }
+
+    @media (min-width: 601px) {
+      #navigation-buttons {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        justify-content: space-between;
+        width: 100%;
+        transform: translateY(-50%);
+        padding: 0 20px;
+        pointer-events: none;
+      }
+
+      .nav-button {
+        pointer-events: all;
+        position: relative;
       }
     }
   </style>
@@ -134,15 +159,16 @@
 
 <body>
 
-  <!-- أزرار التنقل على الجوانب -->
-  <button id="prevBtn" class="nav-button">❮</button>
-  <button id="nextBtn" class="nav-button">❯</button>
-
   <div id="flipbook">
     <div class="page"><img src="image1.jpeg" alt="Page 1"></div>
     <div class="page"><img src="image2.jpeg" alt="Page 2"></div>
     <div class="page"><img src="image3.jpeg" alt="Page 3"></div>
     <div class="page"><img src="image4.jpeg" alt="Page 4"></div>
+  </div>
+
+  <div id="navigation-buttons">
+    <button id="prevBtn" class="nav-button">❮</button>
+    <button id="nextBtn" class="nav-button">❯</button>
   </div>
 
   <div id="thumbnail-section">
@@ -160,7 +186,7 @@
       flipbook.turn({
         autoCenter: true,
         display: 'single',
-        direction: 'rtl'
+        direction: 'ltr'
       });
 
       function updateThumbnail(page) {
@@ -172,8 +198,8 @@
         $('#prevBtn').show();
       }
 
-      $('#nextBtn').click(() => flipbook.turn('previous'));
-      $('#prevBtn').click(() => flipbook.turn('next'));
+      $('#nextBtn').click(() => flipbook.turn('next'));
+      $('#prevBtn').click(() => flipbook.turn('previous'));
 
       $('.thumbnail').click(function () {
         const index = $(this).index() + 1;
