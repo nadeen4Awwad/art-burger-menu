@@ -11,196 +11,250 @@
 
   <style>
     * {
-      margin: 0;
-      padding: 0;
+      margin: 0; 
+      padding: 0; 
       box-sizing: border-box;
     }
 
     html, body {
-      width: 100vw;
-      height: 100vh;
+      width: 100vw; 
+      height: 100vh; 
       background-color: #fdf6e3;
       font-family: Arial, sans-serif;
-      overflow: hidden;
-      direction: rtl; /* عرض عربي */
+      overflow: hidden; 
+      direction: rtl;
     }
 
     body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
       justify-content: flex-start;
-      position: relative;
+      position: relative; 
       text-align: center;
     }
 
-    /* flipbook لكل الأجهزة */
+    /* الكتاب */
     #flipbook {
-      width: 100vw;
+      width: 100vw; 
       height: calc(100vh - 250px);
       margin: 0 auto;
-      position: relative;
+      position: relative; 
       z-index: 1;
     }
 
     .page {
-      width: 100%;
+      width: 100%; 
       height: 100%;
-      display: flex;
-      justify-content: center;
+      display: flex; 
+      justify-content: center; 
       align-items: center;
       background: #fdf6e3;
     }
 
     .page img {
-      width: auto;
+      width: auto; 
       max-width: 100%;
-      height: 100%;
-      max-height: 100%;
+      height: 100%; 
+      max-height: 100%; 
       object-fit: contain;
-      background-color: #fdf6e3;
+      background-color: #fdf6e3; 
       display: block;
     }
 
-    /* حاوية الأزرار – بشكل افتراضي على الموبايل */
-    #navigation-buttons {
-      position: relative; /* هذا للموبايل */
+    /*
+      حاوية واحدة لكل من الأسهم والثامبنيل
+      - على الويب: سهام على الجانبين + ثامبنيل تحت
+      - على الموبايل: كله بسطر واحد
+    */
+    #nav-and-thumbs {
       display: flex;
-      justify-content: center;
-      gap: 30px;
-      margin-top: 10px;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none; /* لكي لا تمنع نقرات الأزرار */
+      width: 100%;
+    }
+
+    /* حاوية الأزرار */
+    #navigation-buttons {
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 30px; 
+      margin-top: 10px; 
+      pointer-events: none; 
+      width: 100%;
+      position: relative;
     }
 
     .nav-button {
-      pointer-events: all;
+      pointer-events: all; /* السماح بالنقر */
       background-color: rgba(0, 0, 0, 0.3);
       color: white;
       border: none;
       border-radius: 50%;
-      width: 48px;
+      width: 48px; 
       height: 48px;
       font-size: 24px;
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
-
     .nav-button:hover {
       background-color: rgba(0, 0, 0, 0.6);
     }
 
-    /* صور الـ thumbnails */
+    /* الثامبنيل */
     #thumbnail-section {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
+      pointer-events: all;
+      display: flex; 
       flex-wrap: wrap;
+      gap: 10px;
       padding: 5px 10px;
+      justify-content: center;
     }
 
     .thumbnail {
-      width: 50px;
+      width: 50px; 
       height: 50px;
-      overflow: hidden;
+      overflow: hidden; 
       border-radius: 10px;
       cursor: pointer;
       transition: transform 0.3s;
     }
-
     .thumbnail:hover,
     .thumbnail.active {
       transform: scale(1.2);
       box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
     }
-
     .thumbnail img {
-      width: 100%;
+      width: 100%; 
       height: 100%;
       object-fit: cover;
     }
 
-    /* ====================================================================== */
-    /* الموبايل */
+    /* ============== للموبايل ============== */
     @media (max-width: 767px) {
       #flipbook {
-        margin-top: 10px;
+        margin-top: 10px; 
         margin-bottom: 10px;
         height: auto;
         max-height: calc(100vh - 160px);
       }
-
       .page img {
         height: auto;
         max-height: calc(100vh - 160px);
       }
+
+      /*
+        الأسهم والثامبنيل في صف واحد وعلى نفس المستوى:
+        من اليمين لليسار:
+        [ زر_prev | الثامبنيل وسط | زر_next ]
+      */
+      #nav-and-thumbs {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center; /* توحيد ارتفاع الأسهم والثامبنيل */
+        gap: 10px;
+        padding: 0 10px; /* تقليل الهوامش الداخلية */
+      }
+
+      #navigation-buttons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        order: 1; /* ضمان أن الأسهم تظهر بعد الثامبنيل عند تصفح الكود */
+        margin: 0; /* إزالة أي هوامش عمودية */
+      }
+
+      #thumbnail-section {
+        display: flex;
+        gap: 5px;
+        flex-wrap: nowrap;
+        align-items: center; /* محاذاة الثامبنيل مع الأزرار عموديًا */
+        order: 0;
+      }
+
+      /* صغّر الثامبنيل */
+      .thumbnail {
+        width: 40px; 
+        height: 40px;
+      }
     }
 
-    /* ====================================================================== */
-    /* الويب */
+    /* ============== للويب ============== */
     @media (min-width: 768px) {
-      /* نجعل flipbook صغير قدر الصورة */
       #flipbook {
-        width: auto;
+        width: auto; 
         height: auto;
         display: inline-block;
         max-height: 90vh;
         margin: 0 auto;
       }
-
       .page {
-        width: auto;
+        width: auto; 
         height: auto;
       }
-
       .page img {
-        width: auto;
+        width: auto; 
         height: 90vh;
-        max-height: 90vh;
+        max-height: 90vh; 
         object-fit: contain;
         border-radius: 10px;
-        background-color: #fdf6e3;
       }
 
-      /* هنا نضع الأزرار خارج الصورة يمين ويسار */
+      /*
+        الأسهم خارج الصورة (جانبيها) بمنتصف الارتفاع
+      */
       #navigation-buttons {
-        position: absolute;
-        top: 50%;
+        position: absolute; 
+        top: 50%; 
         left: 0; 
-        right: 0;
+        right: 0; 
         transform: translateY(-50%);
-        /* حطينا العرض 100% لتملأ الشاشة افقيًا */
-        width: 100%;
+        width: 100%; 
         justify-content: space-between;
-        align-items: center;
         z-index: 9999;
-        pointer-events: none; /* تعطيل النقر على الحاوية */
+      }
+      .nav-button {
+        margin: 0 250px;
       }
 
-      .nav-button {
-        pointer-events: all; /* السماح بالنقر على الأزرار */
-        margin: 0 300px; /* مسافة جانبية لو بدك */
+      /* الثامبنيل تحت المنيو */
+      #thumbnail-section {
+        position: static;
+        display: flex;
+        gap: 10px; 
+        justify-content: center;
+        flex-wrap: wrap;
       }
     }
   </style>
 </head>
 
 <body>
+  <!-- الكتاب -->
   <div id="flipbook">
+    <!-- صفحات المنيو -->
     <div class="page"><img src="image1.jpeg" alt="Page 1" /></div>
     <div class="page"><img src="image2.jpeg" alt="Page 2" /></div>
     <div class="page"><img src="image3.jpeg" alt="Page 3" /></div>
     <div class="page"><img src="image4.jpeg" alt="Page 4" /></div>
   </div>
 
-  <div id="navigation-buttons">
-    <button id="prevBtn" class="nav-button">❮</button>
-    <button id="nextBtn" class="nav-button">❯</button>
-  </div>
-
-  <div id="thumbnail-section">
-    <div class="thumbnail active"><img src="image1.jpeg" alt="Thumb 1" /></div>
-    <div class="thumbnail"><img src="image2.jpeg" alt="Thumb 2" /></div>
-    <div class="thumbnail"><img src="image3.jpeg" alt="Thumb 3" /></div>
-    <div class="thumbnail"><img src="image4.jpeg" alt="Thumb 4" /></div>
+  <!-- حاوية تجمع الأسهم والثامبنيل -->
+  <div id="nav-and-thumbs">
+    <div id="navigation-buttons">
+      <button id="prevBtn" class="nav-button">❮</button>
+      <button id="nextBtn" class="nav-button">❯</button>
+    </div>
+    <div id="thumbnail-section">
+      <div class="thumbnail active"><img src="image1.jpeg" alt="Thumb 1" /></div>
+      <div class="thumbnail"><img src="image2.jpeg" alt="Thumb 2" /></div>
+      <div class="thumbnail"><img src="image3.jpeg" alt="Thumb 3" /></div>
+      <div class="thumbnail"><img src="image4.jpeg" alt="Thumb 4" /></div>
+    </div>
   </div>
 
   <script>
@@ -208,7 +262,7 @@
       const flipbook = $('#flipbook');
       const totalPages = $('.page').length;
 
-      // turn.js بدون autoCenter
+      // إعداد turn.js
       flipbook.turn({
         display: 'single',
         direction: 'rtl',
@@ -220,36 +274,33 @@
       });
 
       function updateThumbnail(page) {
-        $('.thumbnail').removeClass('active').eq(page - 1).addClass('active');
+        $('.thumbnail').removeClass('active')
+          .eq(page - 1).addClass('active');
       }
 
       // أزرار التنقل
       $('#nextBtn').click(() => {
         let currentPage = flipbook.turn('page');
-        if (currentPage === totalPages) {
-          flipbook.turn('page', 1);
-        } else {
-          flipbook.turn('next');
-        }
+        (currentPage === totalPages)
+          ? flipbook.turn('page', 1)
+          : flipbook.turn('next');
       });
 
       $('#prevBtn').click(() => {
         let currentPage = flipbook.turn('page');
-        if (currentPage === 1) {
-          flipbook.turn('page', totalPages);
-        } else {
-          flipbook.turn('previous');
-        }
+        (currentPage === 1)
+          ? flipbook.turn('page', totalPages)
+          : flipbook.turn('previous');
       });
 
-      // thumbnails
+      // عند الضغط على الثامبنيل
       $('.thumbnail').click(function () {
         const index = $(this).index() + 1;
         flipbook.turn('page', index);
       });
     });
 
-    // اختياري لمنع زوم المتصفح
+    // منع زوم المتصفح (اختياري)
     window.onload = function () {
       document.body.style.transform = "scale(1)";
       document.body.style.transformOrigin = "0 0";
