@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <title>Art Burger Menu</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
+  
+  <!-- jQuery + turn.js -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="turn.min.js"></script>
 
@@ -20,7 +22,7 @@
       background-color: #fdf6e3;
       font-family: Arial, sans-serif;
       overflow: hidden;
-      direction: rtl;
+      direction: rtl; /* عرض عربي */
     }
 
     body {
@@ -28,11 +30,11 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 0;
       position: relative;
       text-align: center;
     }
 
+    /* flipbook لكل الأجهزة */
     #flipbook {
       width: 100vw;
       height: calc(100vh - 250px);
@@ -60,8 +62,9 @@
       display: block;
     }
 
+    /* حاوية الأزرار – بشكل افتراضي على الموبايل */
     #navigation-buttons {
-      position: relative;
+      position: relative; /* هذا للموبايل */
       display: flex;
       justify-content: center;
       gap: 30px;
@@ -85,6 +88,7 @@
       background-color: rgba(0, 0, 0, 0.6);
     }
 
+    /* صور الـ thumbnails */
     #thumbnail-section {
       display: flex;
       justify-content: center;
@@ -114,26 +118,32 @@
       object-fit: cover;
     }
 
+    /* ====================================================================== */
+    /* الموبايل */
     @media (max-width: 767px) {
       #flipbook {
-        height: auto;
-        margin-top: 30px; /* زيادة مارجن من الأعلى للموبايل */
+        margin-top: 10px;
         margin-bottom: 10px;
-        max-height: calc(100vh - 260px);
+        height: auto;
+        max-height: calc(100vh - 160px);
       }
 
       .page img {
         height: auto;
-        max-height: calc(100vh - 260px);
+        max-height: calc(100vh - 160px);
       }
     }
 
+    /* ====================================================================== */
+    /* الويب */
     @media (min-width: 768px) {
+      /* نجعل flipbook صغير قدر الصورة */
       #flipbook {
         width: auto;
         height: auto;
         display: inline-block;
         max-height: 90vh;
+        margin: 0 auto;
       }
 
       .page {
@@ -150,24 +160,29 @@
         background-color: #fdf6e3;
       }
 
+      /* هنا نضع الأزرار خارج الصورة يمين ويسار */
       #navigation-buttons {
         position: absolute;
         top: 50%;
-        left: 0;
+        left: 0; 
         right: 0;
-        justify-content: space-between;
-        width: 100%;
         transform: translateY(-50%);
-        padding: 200px;
-        pointer-events: none;
+        /* حطينا العرض 100% لتملأ الشاشة افقيًا */
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 9999;
+        pointer-events: none; /* تعطيل النقر على الحاوية */
       }
 
       .nav-button {
-        pointer-events: all;
+        pointer-events: all; /* السماح بالنقر على الأزرار */
+        margin: 0 300px; /* مسافة جانبية لو بدك */
       }
     }
   </style>
 </head>
+
 <body>
   <div id="flipbook">
     <div class="page"><img src="image1.jpeg" alt="Page 1" /></div>
@@ -193,10 +208,10 @@
       const flipbook = $('#flipbook');
       const totalPages = $('.page').length;
 
+      // turn.js بدون autoCenter
       flipbook.turn({
-        autoCenter: true,
         display: 'single',
-        direction: 'ltr',
+        direction: 'rtl',
         when: {
           turned: function (event, page) {
             updateThumbnail(page);
@@ -208,6 +223,7 @@
         $('.thumbnail').removeClass('active').eq(page - 1).addClass('active');
       }
 
+      // أزرار التنقل
       $('#nextBtn').click(() => {
         let currentPage = flipbook.turn('page');
         if (currentPage === totalPages) {
@@ -226,12 +242,14 @@
         }
       });
 
+      // thumbnails
       $('.thumbnail').click(function () {
         const index = $(this).index() + 1;
         flipbook.turn('page', index);
       });
     });
 
+    // اختياري لمنع زوم المتصفح
     window.onload = function () {
       document.body.style.transform = "scale(1)";
       document.body.style.transformOrigin = "0 0";
