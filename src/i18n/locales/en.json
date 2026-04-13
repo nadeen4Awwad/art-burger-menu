@@ -1,0 +1,40 @@
+{
+  "nav": {
+    "brand": "Art Burger",
+    "tagline": "A Culinary Exhibition",
+    "menu": "Menu",
+    "about": "About"
+  },
+  "hero": {
+    "eyebrow": "Est. 2024 — Bethlehem",
+    "title_1": "Where Craft",
+    "title_2": "Becomes Art",
+    "subtitle": "Each creation is a singular moment. Composed with intention. Served with precision.",
+    "cta": "Explore the Menu",
+    "scroll": "Scroll to Discover"
+  },
+  "categories": {
+    "heading": "The Collection",
+    "subheading": "Select a chapter to begin your experience"
+  },
+  "item": {
+    "chef_pick": "Chef's Selection",
+    "explore": "Explore",
+    "add_to_cart": "Add",
+    "added": "Added"
+  },
+  "cart": {
+    "title": "Your Cart",
+    "empty": "Your cart is empty",
+    "items": "items",
+    "total": "Total",
+    "clear": "Clear Cart",
+    "order_whatsapp": "ORDER VIA WHATSAPP"
+  },
+  "footer": {
+    "tagline": "Every bite, a brushstroke.",
+    "address": "Bethlehem, Palestine",
+    "hours": "Daily 12:00 — 23:30",
+    "rights": "Art Burger. All rights reserved."
+  }
+}
