@@ -118,3 +118,9 @@ body {
   -webkit-text-fill-color: transparent;
   animation: shimmer 4s linear infinite;
 }
+
+[dir='rtl'] .font-body, 
+[dir='rtl'] .tracking-widest,
+[dir='rtl'] * {
+    letter-spacing: normal !important;
+}

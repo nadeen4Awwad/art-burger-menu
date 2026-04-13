@@ -183,8 +183,7 @@ function ItemRow({ item, index, lang, t }) {
 
   return (
     <motion.div
-      // نستخدم الـ x بحذر لضمان عدم خروج العنصر عن الشاشة
-      initial={{ opacity: 0, x: isEven ? -50 : 50 }}
+      initial={{ opacity: 0, x: isEven ? -30 : 30 }} // قللنا القيمة من 50 إلى 30 لمنع التوسع الزائد
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
       transition={{
@@ -192,7 +191,6 @@ function ItemRow({ item, index, lang, t }) {
         ease: [0.22, 1, 0.36, 1],
         delay: index * 0.05
       }}
-      className="relative w-full overflow-hidden" // منع السكرول داخل السطر نفسه
       style={{
         display: 'grid',
         gridTemplateColumns: isEven ? '1.1fr 1fr' : '1fr 1.1fr',
@@ -201,10 +199,11 @@ function ItemRow({ item, index, lang, t }) {
         marginBottom: '1.5rem',
         padding: '1rem 0',
         borderBottom: '1px solid rgba(212,175,55,0.05)',
-        // 3. التغيير السحري هنا:
-        // أثناء الحركة (false) يكون visible حتى لا تُقص الصورة
-        // بعد الاستقرار (true) يصبح hidden لمنع أي سكرول جانبي
-        overflow: isAnimationDone ? 'hidden' : 'visible',
+
+        // التعديل الجوهري هنا:
+        overflow: 'hidden', // اجعله hidden دائماً، هذا يمنع أي سكرول عرضي نهائياً
+        width: '100%',
+        position: 'relative'
       }}
     >
       {/* ── قسم الصورة ── */}
@@ -228,7 +227,8 @@ function ItemRow({ item, index, lang, t }) {
             position: 'absolute',
             bottom: '45%',        // يطلع من منتصف الصورة للأعلى
             left: '50%',
-            transform: 'translateX(-50%)',
+            transform: 'translateX(-50%) translateZ(0)', // أضفنا translateZ(0) هنا
+            WebkitTransform: 'translateX(-50%) translateZ(0)',
             zIndex: 30,
             pointerEvents: 'none',
           }}>
@@ -268,27 +268,42 @@ function ItemRow({ item, index, lang, t }) {
           <span className="font-display text-gold" style={{ fontSize: '1.2rem' }}>₪{item.price}</span>
 
           <motion.button
-            onClick={(e) => {
-              e.stopPropagation();
-              addToCart(item);
-              setJustAdded(true);
-              setTimeout(() => setJustAdded(false), 1000);
-            }}
-            animate={{
-              borderColor: justAdded ? '#4ade80' : 'rgba(212,175,55,0.3)',
-              backgroundColor: justAdded ? 'rgba(74, 222, 128, 0.1)' : 'rgba(212,175,55,0.05)',
-              scale: justAdded ? 1.05 : 1
-            }}
-            style={{
-              padding: '6px 16px',
-              fontSize: '10px',
-              border: '1px solid',
-              color: justAdded ? '#4ade80' : 'var(--gold)',
-              cursor: 'pointer'
-            }}
-          >
-            {justAdded ? (isRTL ? 'تم ✓' : 'Added ✓') : (isRTL ? 'أضف' : 'Add')}
-          </motion.button>
+  onClick={(e) => {
+    e.stopPropagation();
+    addToCart(item);
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 1000);
+  }}
+  animate={{
+    borderColor: justAdded ? '#4ade80' : 'rgba(212,175,55,0.3)',
+    backgroundColor: justAdded ? 'rgba(74, 222, 128, 0.1)' : 'rgba(212,175,55,0.05)',
+    scale: justAdded ? 1.05 : 1
+  }}
+  className="flex items-center gap-2" // إضافة gap لتوزيع الأيقونة والنص
+  style={{
+    padding: '6px 14px',
+    fontSize: '11px', // كبّرنا الخط شوي عشان يوضح مع الأيقونة
+    border: '1px solid',
+    color: justAdded ? '#4ade80' : 'var(--gold)',
+    cursor: 'pointer',
+    borderRadius: '4px', // إضافة زوايا ناعمة بتعطي مظهر عصري
+    whiteSpace: 'nowrap'
+  }}
+>
+  {/* أيقونة السلة */}
+  {!justAdded && (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="9" cy="21" r="1"></circle>
+      <circle cx="20" cy="21" r="1"></circle>
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+    </svg>
+  )}
+
+  {/* النص */}
+  <span>
+    {justAdded ? (isRTL ? 'تمت الإضافة ✓' : 'Added ✓') : (isRTL ? 'أضف للسلة' : 'Add to Cart')}
+  </span>
+</motion.button>
         </div>
       </div>
     </motion.div>

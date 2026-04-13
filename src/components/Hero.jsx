@@ -50,8 +50,9 @@ export default function Hero({ onExplore }) {
           className="font-body text-xs tracking-widest mb-8"
           style={{
             color: 'var(--gold)',
-            letterSpacing: '0.35em',
+            letterSpacing: isAr ? 'normal' : '0.35em',
             opacity: 0.7,
+            direction: isAr ? 'rtl' : 'ltr'
           }}
         >
           {t('hero.eyebrow')}
