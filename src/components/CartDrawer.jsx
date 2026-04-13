@@ -304,7 +304,7 @@ function CartItemRow({ item, index, lang, onRemove, onUpdateQty }) {
 }
 
 function buildWhatsAppUrl(items, total, lang) {
-  const phone = '970599000000'
+  const phone = '972568978116'
   let message = lang === 'ar' ? '🍔 طلب جديد من Art Burger:\n\n' : '🍔 New Order from Art Burger:\n\n'
 
   items.forEach((item) => {
