@@ -17,8 +17,19 @@ export default function CartDrawer({ lang }) {
   } = useCart()
 
   const [notes, setNotes] = useState('')
+  const [confirmClear, setConfirmClear] = useState(false)
 
   const dir = lang === 'ar' ? 'rtl' : 'ltr'
+
+  const handleClearCart = () => {
+    if (confirmClear) {
+      clearCart()
+      setConfirmClear(false)
+    } else {
+      setConfirmClear(true)
+      setTimeout(() => setConfirmClear(false), 3000)
+    }
+  }
 
   return (
     <AnimatePresence>
@@ -97,6 +108,7 @@ export default function CartDrawer({ lang }) {
                     stroke="currentColor"
                     strokeWidth="1.1"
                     strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
                 </svg>
               </button>
@@ -145,13 +157,30 @@ export default function CartDrawer({ lang }) {
                 }}
               >
                 {/* Clear cart */}
-                <button
-                  onClick={clearCart}
-                  className="font-body text-xs mb-4 transition-opacity hover:opacity-70"
-                  style={{ color: 'var(--text-dim)', letterSpacing: '0.15em' }}
-                >
-                  {lang === 'ar' ? 'إفراغ السلة' : 'Clear Cart'}
-                </button>
+                <div className="flex justify-end mb-4">
+                  <button
+                    onClick={handleClearCart}
+                    className="flex items-center gap-1.5 font-body text-xs transition-all duration-200"
+                    style={{
+                      color: confirmClear ? 'rgba(220,60,60,0.85)' : 'var(--text-dim)',
+                      letterSpacing: '0.12em',
+                      padding: '4px 8px',
+                      border: confirmClear ? '1px solid rgba(220,60,60,0.3)' : '1px solid transparent',
+                      borderRadius: 0,
+                      background: confirmClear ? 'rgba(220,60,60,0.06)' : 'transparent',
+                    }}
+                  >
+                    <svg width="11" height="12" viewBox="0 0 11 12" fill="none">
+                      <path d="M1 3h9M4 3V1.5h3V3M2 3l.5 7.5h6L9 3" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round"/>
+                      <line x1="4.5" y1="5.5" x2="4.5" y2="8.5" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round"/>
+                      <line x1="6.5" y1="5.5" x2="6.5" y2="8.5" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round"/>
+                    </svg>
+                    {confirmClear
+                      ? (lang === 'ar' ? 'تأكيد الحذف؟' : 'Sure?')
+                      : (lang === 'ar' ? 'إفراغ السلة' : 'Clear Cart')
+                    }
+                  </button>
+                </div>
 
                 {/* Notes field */}
                 <div className="mb-4">
@@ -160,8 +189,10 @@ export default function CartDrawer({ lang }) {
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder={lang === 'ar' ? 'ملاحظات أو طلبات خاصة...' : 'Notes or special requests...'}
                     rows={2}
-                    className="font-body text-xs w-full resize-none"
+                    className="w-full resize-none"
                     style={{
+                      fontSize: '16px', // منع الزوم التلقائي في iOS
+                      fontFamily: 'inherit',
                       background: 'rgba(255,255,255,0.03)',
                       border: '1px solid rgba(212,175,55,0.12)',
                       color: 'var(--text-secondary)',
