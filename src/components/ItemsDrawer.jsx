@@ -71,14 +71,18 @@ export default function ItemsDrawer({ category, lang, onClose }) {
   // داخل مكون ItemsDrawer
   useEffect(() => {
     if (category) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden'
+      document.body.style.position = 'fixed'
+      document.body.style.width = '100%'
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = 'unset'
+      document.body.style.position = 'static'
     }
     return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [category]);
+      document.body.style.overflow = 'unset'
+      document.body.style.position = 'static'
+    }
+  }, [category])
   const { items, loading } = useItems(
     subCategories.length > 0 ? activeTabId : category?.id
   )
@@ -94,16 +98,24 @@ export default function ItemsDrawer({ category, lang, onClose }) {
         <>
           <motion.div key="backdrop"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40"
+            className="fixed inset-0 z-[55]"
             style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
             onClick={onClose} />
 
           <motion.div key="drawer"
             initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed top-0 right-0 bottom-0 z-50 overflow-y-auto overflow-x-hidden"
-            style={{ width: 'min(580px, 100vw)', background: '#0d0d0d', borderLeft: '1px solid rgba(212,175,55,0.07)', maxWidth: '100vw' }}
-            dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+            className="fixed top-0 right-0 bottom-0 z-[60] overflow-y-auto overflow-x-hidden"
+            style={{
+              width: 'min(580px, 100vw)',
+              background: '#0d0d0d',
+              borderLeft: '1px solid rgba(212,175,55,0.07)',
+              maxWidth: '100vw',
+              overscrollBehavior: 'contain',
+              WebkitOverflowScrolling: 'touch',
+            }}
+            dir={lang === 'ar' ? 'rtl' : 'ltr'}
+            onTouchMove={(e) => e.stopPropagation()}>
 
             <DrawerSpices />
 
