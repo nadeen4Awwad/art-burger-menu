@@ -232,7 +232,7 @@ function AdminDashboard({ user, onSignOut }) {
     const payload = {
       ...itemData,
       img_url: imgUrl,
-      category_id: selectedCatId,
+      category_id: itemData.category_id || selectedCatId,
       price: parseFloat(itemData.price) || 0,
     }
     delete payload.id
@@ -399,6 +399,7 @@ function AdminDashboard({ user, onSignOut }) {
                 onClose={() => { setShowCatForm(false); setEditingCat(null) }}
               >
                 <CategoryForm
+                  categories={categories}
                   initial={editingCat}
                   onSave={handleSaveCategory}
                   onCancel={() => { setShowCatForm(false); setEditingCat(null) }}
@@ -505,6 +506,8 @@ function AdminDashboard({ user, onSignOut }) {
                       initial={editingItem}
                       onSave={handleSaveItem}
                       onCancel={() => { setShowItemForm(false); setEditingItem(null) }}
+                      categories={categories}
+                      selectedCatId={selectedCatId}
                     />
                   </FormModal>
                 )}
@@ -559,8 +562,8 @@ function FormModal({ title, onClose, children }) {
   )
 }
 
-// ── Category Form ──
-function CategoryForm({ initial, onSave, onCancel }) {
+// ── Category Form (Modified for Sub-categories) ──
+function CategoryForm({ initial, onSave, onCancel, categories }) { // أضفنا categories هنا
   const [form, setForm] = useState({
     name_en: initial?.name_en || '',
     name_ar: initial?.name_ar || '',
@@ -568,10 +571,15 @@ function CategoryForm({ initial, onSave, onCancel }) {
     desc_ar: initial?.desc_ar || '',
     sort_order: initial?.sort_order || 0,
     image_url: initial?.image_url || '',
+    parent_id: initial?.parent_id || '', // أضفنا الحقل الجديد هنا
   })
   const [imageFile, setImageFile] = useState(null)
   const [preview, setPreview] = useState(initial?.image_url || '')
   const [saving, setSaving] = useState(false)
+
+  // تصفية الأقسام لجلب الرئيسية فقط (التي ليس لها أب) 
+  // لكي لا يحدث تداخل (Sub of Sub)
+  const mainCategories = categories?.filter(c => !c.parent_id && c.id !== initial?.id) || []
 
   const handleFileChange = (e) => {
     const file = e.target.files[0]
@@ -584,12 +592,36 @@ function CategoryForm({ initial, onSave, onCancel }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setSaving(true)
-    await onSave(form, imageFile)
+    // نرسل الـ parent_id مع الفورم، إذا كان فارغاً نرسله كـ null
+    const finalForm = {
+      ...form,
+      parent_id: form.parent_id === '' ? null : form.parent_id
+    }
+    await onSave(finalForm, imageFile)
     setSaving(false)
   }
 
   return (
     <form onSubmit={handleSubmit}>
+      {/* القسم الجديد: اختيار القسم الأب */}
+      <div style={{ marginBottom: 16, padding: '12px', background: 'rgba(212,175,55,0.05)', borderRadius: '4px' }}>
+        <label style={labelStyle}>التصنيف الرئيسي (اختياري)</label>
+        <select
+          style={inputStyle}
+          value={form.parent_id}
+          onChange={(e) => setForm({ ...form, parent_id: e.target.value })}
+        >
+          <option value="">-- تصنيف رئيسي (ليس فرعياً) --</option>
+          {mainCategories.map(cat => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name_ar} / {cat.name_en}
+            </option>
+          ))}
+        </select>
+        <p style={{ color: 'var(--text-dim)', fontSize: 10, marginTop: 4 }}>
+          * اختر قسماً إذا كنت تريد جعل هذا القسم (مثل "وجبات") يظهر داخل قسم آخر (مثل "ساندويشات").
+        </p>
+      </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <div>
           <label style={labelStyle}>Name (EN)</label>
@@ -661,7 +693,7 @@ function CategoryForm({ initial, onSave, onCancel }) {
 }
 
 // ── Item Form ──
-function ItemForm({ initial, onSave, onCancel }) {
+function ItemForm({ initial, onSave, onCancel, categories = [], selectedCatId }) {
   const [form, setForm] = useState({
     name_en: initial?.name_en || '',
     name_ar: initial?.name_ar || '',
@@ -673,6 +705,8 @@ function ItemForm({ initial, onSave, onCancel }) {
     is_chef_pick: initial?.is_chef_pick || false,
     is_available: initial?.is_available !== undefined ? initial.is_available : true,
     img_url: initial?.img_url || '',
+    category_id: initial?.category_id || selectedCatId || '',
+
   })
   const [imageFile, setImageFile] = useState(null)
   const [preview, setPreview] = useState(initial?.img_url || '')
@@ -689,12 +723,29 @@ function ItemForm({ initial, onSave, onCancel }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setSaving(true)
-    await onSave(form, imageFile)
+    await onSave({ ...form, category_id: form.category_id }, imageFile)
     setSaving(false)
   }
 
   return (
     <form onSubmit={handleSubmit}>
+       {/* Category selector */}
+      <div style={{ marginBottom: 16 }}>
+        <label style={labelStyle}>Category</label>
+        <select
+          style={inputStyle}
+          value={form.category_id}
+          onChange={(e) => setForm({ ...form, category_id: Number(e.target.value) })}
+          required
+        >
+          <option value="">— اختر القسم —</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name_en} / {c.name_ar}
+            </option>
+          ))}
+        </select>
+      </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <div>
           <label style={labelStyle}>Name (EN)</label>

@@ -92,7 +92,7 @@ export default function App() {
         <CartDrawer lang={lang} />
 
         {/* WhatsApp CTA */}
-        <WhatsAppButton phone="970599000000" />
+        <WhatsAppButton phone="972568978116" />
       </div>
     </CartProvider>
   )

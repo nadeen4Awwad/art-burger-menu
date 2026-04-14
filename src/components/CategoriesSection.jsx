@@ -42,7 +42,7 @@ export default function CategoriesSection({ onCategorySelect, lang }) {
             border: '1px solid rgba(212,175,55,0.06)',
           }}
         >
-          {categories.map((cat, i) => (
+          {categories.filter(cat => !cat.parent_id).map((cat, i) => (
             <CategoryCard
               key={cat.id}
               category={cat}
@@ -90,34 +90,38 @@ function CategoryCard({ category, index, lang, onClick }) {
           alt={name}
           className="w-full h-full object-cover"
           loading="lazy"
-          style={{ filter: 'brightness(0.9) saturate(0.9)' }} 
+          style={{ filter: 'brightness(0.9) saturate(0.9)' }}
         />
       </motion.div>
 
       {/* 2. طبقة التعتيم الذكية - خففنا الـ opacity لـ 40% بدل 70% */}
-      <div 
-        className="absolute inset-0 bg-black opacity-40 group-hover:opacity-10 transition-opacity duration-700 z-10" 
+      <div
+        className="absolute inset-0 bg-black opacity-40 group-hover:opacity-10 transition-opacity duration-700 z-10"
         aria-hidden="true"
       />
 
       {/* 3. التدرج اللوني - جعلناه يتركز في الأسفل فقط (أقصر) ليعطي وضوح للنص دون تعتيم الصورة كاملة */}
-      <div 
+      <div
         className="absolute inset-0 z-20"
-        style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 40%)' }} 
+        style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 40%)' }}
       />
 
       {/* 4. المحتوى العلوي */}
       <div className="relative z-30 h-full w-full p-6 flex flex-col justify-between">
-        
+
         {/* الزوايا الذهبية */}
         <div className="absolute top-4 left-4"
-          style={{ width: 28, height: 28,
+          style={{
+            width: 28, height: 28,
             borderTop: '1px solid rgba(212,175,55,0.3)',
-            borderLeft: '1px solid rgba(212,175,55,0.3)' }} />
+            borderLeft: '1px solid rgba(212,175,55,0.3)'
+          }} />
         <div className="absolute top-4 right-4"
-          style={{ width: 28, height: 28,
+          style={{
+            width: 28, height: 28,
             borderTop: '1px solid rgba(212,175,55,0.3)',
-            borderRight: '1px solid rgba(212,175,55,0.3)' }} />
+            borderRight: '1px solid rgba(212,175,55,0.3)'
+          }} />
 
         {/* عداد الأصناف */}
         <div className="absolute top-5 left-0 right-0 flex justify-center">
