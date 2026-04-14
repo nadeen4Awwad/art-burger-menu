@@ -48,7 +48,7 @@ function DrawerSpices() {
 // ── Main Drawer ────────────────────────────────────────────────────────────
 export default function ItemsDrawer({ category, lang, onClose }) {
   const { t } = useTranslation()
-  
+
   const { categories } = useCategories() // جلب جميع التصنيفات للبحث عن الفرعية منها
 
   // 1. تحديد الأقسام الفرعية التابعة لهذا القسم (مثل: دجاج، لحم تابعة لـ برجر)
@@ -61,15 +61,25 @@ export default function ItemsDrawer({ category, lang, onClose }) {
   // 2. حالة الـ Tab النشط
   const [activeTabId, setActiveTabId] = useState(null)
 
-   useEffect(() => {
+  useEffect(() => {
     if (subCategories.length > 0) {
       setActiveTabId(subCategories[0].id)
     } else {
       setActiveTabId(null)
     }
   }, [subCategories, category])
-
-   const { items, loading } = useItems(
+  // داخل مكون ItemsDrawer
+  useEffect(() => {
+    if (category) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [category]);
+  const { items, loading } = useItems(
     subCategories.length > 0 ? activeTabId : category?.id
   )
   // 3. فلترة الأطباق بناءً على القسم الفرعي المختيار

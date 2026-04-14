@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '../context/CartContext'
+import {  useEffect } from 'react'
 
 export default function CartDrawer({ lang }) {
   const { t } = useTranslation()
@@ -30,6 +31,23 @@ export default function CartDrawer({ lang }) {
       setTimeout(() => setConfirmClear(false), 3000)
     }
   }
+// 2. وضع الـ useEffect هنا (داخل المكون وبعد تعريف المتغيرات)
+  useEffect(() => {
+    if (isCartOpen) {
+      document.body.style.overflow = 'hidden'
+      // منع الـ "Bounce" في الـ iOS
+      document.body.style.position = 'fixed'
+      document.body.style.width = '100%'
+    } else {
+      document.body.style.overflow = 'unset'
+      document.body.style.position = 'static'
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset'
+      document.body.style.position = 'static'
+    }
+  }, [isCartOpen])
 
   return (
     <AnimatePresence>
