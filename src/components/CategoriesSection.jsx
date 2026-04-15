@@ -16,18 +16,18 @@ export default function CategoriesSection({ onCategorySelect, lang }) {
         className="text-center mb-16 px-6"
       >
         <p className="font-body text-xs mb-4"
-          style={{ color: 'rgba(212,175,55,0.55)', letterSpacing: '0.4em' }}>
+          style={{ color: 'rgba(212,175,55,0.55)', letterSpacing: '0.4em',fontFamily: lang === 'ar' ? '"Cairo", sans-serif':'' }}>
           — {t('categories.subheading')} —
         </p>
         <h2 className="font-display"
-          style={{ fontSize: 'clamp(2.2rem, 5vw, 4rem)', color: 'var(--text-primary)' }}>
+          style={{ fontSize: 'clamp(2.2rem, 5vw, 4rem)', color: 'var(--text-primary)', fontFamily: lang === 'ar' ? '"Cairo", sans-serif':'' }}>
           {t('categories.heading')}
         </h2>
       </motion.div>
 
       {loading ? (
         <div className="flex items-center justify-center py-32">
-          <p className="font-body text-xs" style={{ color: 'var(--text-dim)', letterSpacing: '0.3em' }}>
+          <p className="font-body text-xs" style={{ color: 'var(--text-dim)', letterSpacing: '0.3em', fontFamily: lang === 'ar' ? '"Cairo", sans-serif':'' }}>
             {lang === 'ar' ? 'يتم التحميل...' : 'Loading...'}
           </p>
         </div>
@@ -135,11 +135,11 @@ function CategoryCard({ category, index, lang, onClick }) {
         <div className="mt-auto">
           <div className="gold-line mb-3" style={{ opacity: 0.5 }} />
           <h3 className="font-display mb-1"
-            style={{ fontSize: '1.5rem', color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+            style={{ fontSize: '1.5rem', color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)',fontFamily: lang === 'ar' ? '"Cairo", sans-serif':'' }}>
             {name}
           </h3>
           <p className="font-body text-[11px]"
-            style={{ color: 'rgba(255,255,255,0.7)', lineHeight: '1.6', fontWeight: 300 }}>
+            style={{ color: 'rgba(255,255,255,0.7)', lineHeight: '1.6', fontWeight: 300,fontFamily: lang === 'ar' ? '"Cairo", sans-serif':'' }}>
             {desc}
           </p>
 

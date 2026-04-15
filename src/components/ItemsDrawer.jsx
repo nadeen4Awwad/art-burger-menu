@@ -69,25 +69,25 @@ export default function ItemsDrawer({ category, lang, onClose }) {
     }
   }, [subCategories, category])
   // داخل مكون ItemsDrawer
- useEffect(() => {
-  if (category) {
-    // 1. حساب عرض الـ Scrollbar لمنع اهتزاز الصفحة (Layout Shift)
-    const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
-    
-    // 2. تثبيت السكرول بدون تغيير الـ Position
-    document.body.style.overflow = 'hidden';
-    document.body.style.paddingRight = `${scrollBarWidth}px`;
-  } else {
-    // 3. إعادة الوضع لطبيعته
-    document.body.style.overflow = 'unset';
-    document.body.style.paddingRight = '0px';
-  }
+  useEffect(() => {
+    if (category) {
+      // 1. حساب عرض الـ Scrollbar لمنع اهتزاز الصفحة (Layout Shift)
+      const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
 
-  return () => {
-    document.body.style.overflow = 'unset';
-    document.body.style.paddingRight = '0px';
-  };
-}, [category]);
+      // 2. تثبيت السكرول بدون تغيير الـ Position
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = `${scrollBarWidth}px`;
+    } else {
+      // 3. إعادة الوضع لطبيعته
+      document.body.style.overflow = 'unset';
+      document.body.style.paddingRight = '0px';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+      document.body.style.paddingRight = '0px';
+    };
+  }, [category]);
   const { items, loading } = useItems(
     subCategories.length > 0 ? activeTabId : category?.id
   )
@@ -129,12 +129,12 @@ export default function ItemsDrawer({ category, lang, onClose }) {
               style={{ background: 'rgba(13,13,13,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(212,175,55,0.07)' }}>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="font-body text-xs mb-0.5" style={{ color: 'rgba(212,175,55,0.45)', letterSpacing: '0.35em', fontSize: 10 }}>
+                  <p className="font-body text-xs mb-0.5" style={{ color: 'rgba(212,175,55,0.45)', letterSpacing: '0.35em', fontSize: 10,fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : ''}}>
                     {t('categories.heading')}
                   </p>
-                  <h3 className="font-display" style={{ fontSize: '1.4rem', color: 'var(--text-primary)' }}>{name}</h3>
+                  <h3 className="font-display" style={{ fontSize: '1.4rem', color: 'var(--text-primary)', fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : '' }}>{name}</h3>
                 </div>
-                <button onClick={onClose} className="transition-opacity hover:opacity-50" style={{ color: 'var(--text-secondary)' }}>
+                <button onClick={onClose} className="transition-opacity hover:opacity-50" style={{ color: 'var(--text-secondary)', fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : '' }}>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 1l14 14M15 1L1 15" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" /></svg>
                 </button>
               </div>
@@ -150,7 +150,8 @@ export default function ItemsDrawer({ category, lang, onClose }) {
                       style={{
                         border: `1px solid ${activeTabId === sub.id ? 'var(--gold)' : 'rgba(212,175,55,0.1)'}`,
                         background: activeTabId === sub.id ? 'rgba(212,175,55,0.1)' : 'transparent',
-                        color: activeTabId === sub.id ? 'var(--gold)' : 'var(--text-dim)'
+                        color: activeTabId === sub.id ? 'var(--gold)' : 'var(--text-dim)',
+                        fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : 'inherit',
                       }}
                     >
                       {lang === 'ar' ? sub.name_ar : sub.name_en}
@@ -234,7 +235,10 @@ function ItemRow({ item, index, lang, t }) {
         {item.is_chef_pick && (
           <p className="font-body text-[9px] uppercase tracking-widest mb-1" style={{ color: 'var(--gold)' }}>✦ {t('item.chef_pick')}</p>
         )}
-        <h4 className="font-display leading-tight mb-1" style={{ fontSize: '1.25rem', color: 'white' }}>{name}</h4>
+        <h4 className="font-display leading-tight mb-1" style={{
+          fontSize: '1.25rem', color: 'white'
+          , fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : 'inherit'
+        }}>{name}</h4>
         <p className="font-body mb-4 opacity-60" style={{ fontSize: '0.8rem', lineHeight: '1.4', maxWidth: '200px', marginLeft: isEven ? 0 : 'auto', marginRight: isEven ? 'auto' : 0 }}>{desc}</p>
         <div className={`flex items-center gap-3 ${isEven ? 'justify-start' : 'justify-end'}`}>
           <span className="font-display text-gold" style={{ fontSize: '1.2rem' }}>₪{item.price}</span>

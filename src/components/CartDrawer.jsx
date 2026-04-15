@@ -92,6 +92,7 @@ export default function CartDrawer({ lang }) {
                 background: 'rgba(13,13,13,0.95)',
                 backdropFilter: 'blur(16px)',
                 borderBottom: '1px solid rgba(212,175,55,0.07)',
+                fontFamily: lang === 'ar' ? '"Cairo", sans-serif':''
               }}
             >
               <div className="flex items-center gap-3">
@@ -103,7 +104,7 @@ export default function CartDrawer({ lang }) {
                 <div>
                   <h3
                     className="font-display"
-                    style={{ fontSize: '1.3rem', color: 'var(--text-primary)' }}
+                    style={{ fontSize: '1.3rem', color: 'var(--text-primary)',fontFamily: lang === 'ar' ? '"Cairo", sans-serif':'' }}
                   >
                     {lang === 'ar' ? 'السلة' : 'Your Cart'}
                   </h3>
@@ -209,8 +210,8 @@ export default function CartDrawer({ lang }) {
                     rows={2}
                     className="w-full resize-none"
                     style={{
+                      fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : '',
                       fontSize: '16px', // منع الزوم التلقائي في iOS
-                      fontFamily: 'inherit',
                       background: 'rgba(255,255,255,0.03)',
                       border: '1px solid rgba(212,175,55,0.12)',
                       color: 'var(--text-secondary)',

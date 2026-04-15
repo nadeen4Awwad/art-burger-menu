@@ -33,7 +33,9 @@ export default function Navbar({ onLangToggle, lang }) {
         <a href="#hero" className="flex flex-col leading-none">
           <span
             className="font-display text-xl tracking-widest"
-            style={{ color: 'var(--gold)', letterSpacing: '0.2em' }}
+            style={{ color: 'var(--gold)', letterSpacing: '0.2em',
+              fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : ''
+             }}
           >
             {t('nav.brand')}
           </span>
