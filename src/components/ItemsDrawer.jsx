@@ -68,24 +68,32 @@ export default function ItemsDrawer({ category, lang, onClose }) {
       setActiveTabId(null)
     }
   }, [subCategories, category])
-  // داخل مكون ItemsDrawer
   useEffect(() => {
     if (category) {
-      // 1. حساب عرض الـ Scrollbar لمنع اهتزاز الصفحة (Layout Shift)
-      const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
-
-      // 2. تثبيت السكرول بدون تغيير الـ Position
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
       document.body.style.overflow = 'hidden';
-      document.body.style.paddingRight = `${scrollBarWidth}px`;
     } else {
-      // 3. إعادة الوضع لطبيعته
-      document.body.style.overflow = 'unset';
-      document.body.style.paddingRight = '0px';
+      const scrollY = Math.abs(parseInt(document.body.style.top || '0', 10));
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, scrollY);
     }
 
     return () => {
-      document.body.style.overflow = 'unset';
-      document.body.style.paddingRight = '0px';
+      const scrollY = Math.abs(parseInt(document.body.style.top || '0', 10));
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      if (scrollY) window.scrollTo(0, scrollY);
     };
   }, [category]);
   const { items, loading } = useItems(
@@ -118,6 +126,8 @@ export default function ItemsDrawer({ category, lang, onClose }) {
               maxWidth: '100vw',
               overscrollBehavior: 'contain',
               WebkitOverflowScrolling: 'touch',
+              willChange: 'transform',
+              contain: 'layout style paint',
             }}
             dir={lang === 'ar' ? 'rtl' : 'ltr'}
             onTouchMove={(e) => e.stopPropagation()}>
@@ -129,7 +139,7 @@ export default function ItemsDrawer({ category, lang, onClose }) {
               style={{ background: 'rgba(13,13,13,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(212,175,55,0.07)' }}>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="font-body text-xs mb-0.5" style={{ color: 'rgba(212,175,55,0.45)', letterSpacing: '0.35em', fontSize: 10,fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : ''}}>
+                  <p className="font-body text-xs mb-0.5" style={{ color: 'rgba(212,175,55,0.45)', letterSpacing: '0.35em', fontSize: 10, fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : '' }}>
                     {t('categories.heading')}
                   </p>
                   <h3 className="font-display" style={{ fontSize: '1.4rem', color: 'var(--text-primary)', fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : '' }}>{name}</h3>
