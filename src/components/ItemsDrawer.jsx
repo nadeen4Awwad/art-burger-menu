@@ -268,22 +268,28 @@ function ItemRow({ item, index, lang, t }) {
           width: '100%',
         }}
       >
-        <motion.img
-          src={item.img_url}
-          alt={name}
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.35 }}
-          style={{
-            width: '100%',
-            maxWidth: '290px',
-            height: 'auto',
-            objectFit: 'contain',
-            transform: 'scale(1.12)',
-            filter: 'drop-shadow(0 18px 35px rgba(0,0,0,0.75))',
-            pointerEvents: 'none',
-            userSelect: 'none',
-          }}
-        />
+     <motion.img
+  src={item.img_url}
+  alt={name}
+  whileHover={{ scale: 1.05 }}
+  transition={{ duration: 0.35 }}
+  style={{
+    width: '100%',
+    maxWidth: '290px',
+    height: 'auto',
+    objectFit: 'contain',
+    transform: 'scale(1.12)',
+    background: 'transparent',
+    mixBlendMode: 'normal',
+    filter: `
+      drop-shadow(0 10px 18px rgba(0,0,0,0.28))
+      drop-shadow(0 22px 38px rgba(0,0,0,0.42))
+      drop-shadow(0 0 12px rgba(255,255,255,0.03))
+    `,
+    pointerEvents: 'none',
+    userSelect: 'none',
+  }}
+/>
 
         {item.has_steam && (
           <div
