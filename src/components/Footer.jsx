@@ -62,7 +62,6 @@ export default function Footer() {
           style={{ color: 'var(--text-dim)', letterSpacing: '0.15em' }}
         >
           <span>{t('footer.address')}</span>
-          <span>{t('footer.hours')}</span>
           <span>{t('footer.rights')}</span>
         </div>
       </div>

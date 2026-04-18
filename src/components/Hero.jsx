@@ -89,10 +89,10 @@ const ICON_SIZES = {
 
 const FONT_SIZES = {
   mobile: { eyebrow: '1.1rem', subtitle: '1.3rem', cta: '1.2rem' },
-  desktop: { 
-    eyebrow: 'clamp(0.85rem, 2.2vw, 1.2rem)', 
-    subtitle: 'clamp(1rem, 3.5vw, 1.45rem)', 
-    cta: 'clamp(0.9rem, 2.5vw, 1.1rem)' 
+  desktop: {
+    eyebrow: 'clamp(0.85rem, 2.2vw, 1.2rem)',
+    subtitle: 'clamp(1rem, 3.5vw, 1.45rem)',
+    cta: 'clamp(0.9rem, 2.5vw, 1.1rem)',
   },
 }
 
@@ -105,7 +105,7 @@ const FLOATING_ICONS = [
   { icon: 'grill', x: '14%', y: '82%', delay: 1, duration: 6 },
 ]
 
-// ─── FloatingIcon (The Layered Fix) ────────────────────────
+// ─── FloatingIcon ─────────────────────────────────────────
 const FloatingIcon = ({ x, y, delay = 0, duration = 6, icon, size = 56 }) => (
   <motion.div
     initial={{ opacity: 0 }}
@@ -122,6 +122,129 @@ const FloatingIcon = ({ x, y, delay = 0, duration = 6, icon, size = 56 }) => (
   </motion.div>
 )
 
+// ─── Business Hours ───────────────────────────────────────
+// الدوام: 11:00 صباحاً — 11:30 مساءً يومياً
+const OPENS = 11        // 11:00 ص
+const CLOSES = 23.5      // 11:30 م
+
+function getStatus() {
+  const now = new Date()
+  const time = now.getHours() + now.getMinutes() / 60
+  return time >= OPENS && time < CLOSES
+}
+
+function BusinessHours({ isAr, arabicFont, englishFont, isMobile }) {
+  const [open, setOpen] = useState(getStatus)
+
+  // يعيد الحساب كل دقيقة
+  useEffect(() => {
+    const id = setInterval(() => setOpen(getStatus()), 60_000)
+    return () => clearInterval(id)
+  }, [])
+
+  const openText = isAr ? 'مفتوح الآن' : 'Open Now'
+  const closeText = isAr ? 'مغلق الآن' : 'Closed Now'
+
+  // سطر الأوقات
+  const hoursLine = isAr
+    ? 'يومياً  ١١:٠٠ ص — ١١:٣٠ م'
+    : 'Daily  11:00 AM — 11:30 PM'
+
+  // سطر "يفتح الساعة" لما يكون مغلق
+  const opensAtLine = isAr
+    ? 'يفتح الساعة ١١:٠٠ صباحاً'
+    : 'Opens at 11:00 AM'
+
+  const dotSize = isMobile ? '9px' : '7px'
+  const statusSize = isMobile ? '0.9rem' : '0.72rem'
+  const hoursSize = isMobile ? '0.9rem' : '0.64rem'
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '7px' }}
+    >
+      {/* Status row */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+
+        {/* Pulsing dot */}
+        <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{
+            width: dotSize,
+            height: dotSize,
+            borderRadius: '50%',
+            background: open ? '#4ade80' : 'rgba(255,255,255,0.18)',
+            display: 'block',
+            position: 'relative',
+            zIndex: 2,
+          }} />
+          {open && (
+            <motion.span
+              animate={{ scale: [1, 2.6], opacity: [0.5, 0] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
+              style={{
+                position: 'absolute',
+                width: dotSize,
+                height: dotSize,
+                borderRadius: '50%',
+                background: '#4ade80',
+                zIndex: 1,
+              }}
+            />
+          )}
+        </span>
+
+        {/* Status label */}
+        <motion.span
+          key={open ? 'open' : 'closed'}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          style={{
+            fontSize: statusSize,
+            letterSpacing: '0.2em',
+            color: open ? '#4ade80' : 'rgba(255,255,255,0.22)',
+            fontFamily: isAr ? arabicFont : englishFont,
+            fontWeight: 500,
+          }}
+        >
+          {open ? openText : closeText}
+        </motion.span>
+      </div>
+
+      {/* Hours line */}
+      <p style={{
+        fontSize: hoursSize,
+        letterSpacing: '0.14em',
+        color: 'rgba(212,175,55,0.55)', fontFamily: isAr ? arabicFont : englishFont,
+        margin: 0,
+      }}>
+        {hoursLine}
+      </p>
+
+      {/* "Opens at" — يظهر فقط لما مغلق */}
+      {!open && (
+        <motion.p
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          style={{
+            fontSize: isMobile ? '0.7rem' : '0.6rem',
+            letterSpacing: '0.16em',
+            color: 'rgba(212,175,55,0.22)',
+            fontFamily: isAr ? arabicFont : englishFont,
+            margin: 0,
+          }}
+        >
+          {opensAtLine}
+        </motion.p>
+      )}
+    </motion.div>
+  )
+}
+
 // ─── Main Hero Component ──────────────────────────────────
 export default function Hero({ onExplore }) {
   const { t, i18n } = useTranslation()
@@ -137,19 +260,12 @@ export default function Hero({ onExplore }) {
   return (
     <section
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
-      style={{
-        background: 'var(--bg)',
-        textAlign: 'center',
-      }}
+      style={{ background: 'var(--bg)', textAlign: 'center' }}
     >
       {/* ─── Layer 1: Background Floating Icons ─── */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         {FLOATING_ICONS.map((cfg) => (
-          <FloatingIcon
-            key={cfg.icon}
-            {...cfg}
-            size={sizes[cfg.icon]}
-          />
+          <FloatingIcon key={cfg.icon} {...cfg} size={sizes[cfg.icon]} />
         ))}
       </div>
 
@@ -182,9 +298,7 @@ export default function Hero({ onExplore }) {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            margin: 'clamp(1.5rem, 5vw, 3rem) 0',
-          }}
+          style={{ margin: 'clamp(1.5rem, 5vw, 3rem) 0' }}
         >
           <img
             src="/logo.png"
@@ -216,23 +330,77 @@ export default function Hero({ onExplore }) {
         <motion.button
           {...fadeUp(0.5)}
           onClick={onExplore}
-          whileHover={{ scale: 1.05, backgroundColor: 'rgba(212,175,55,0.1)' }}
-          whileTap={{ scale: 0.98 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
           style={{
             marginTop: 'clamp(2rem, 6vw, 3rem)',
             fontSize: fonts.cta,
-            padding: '14px 48px',
-            color: 'var(--gold)',
-            border: '1px solid rgba(212,175,55,0.4)',
-            background: 'rgba(212,175,55,0.05)',
+            padding: '15px 56px',
+            color: '#0d0d0d',
+            border: 'none',
+            background: 'var(--gold)',
             cursor: 'pointer',
             fontFamily: isAr ? arabicFont : englishFont,
-            letterSpacing: '0.05em',
-            transition: 'border-color 0.3s',
+            letterSpacing: '0.12em',
+            fontWeight: 600,
+            position: 'relative',
+            overflow: 'hidden',
+            boxShadow: '0 0 32px rgba(212,175,55,0.25), 0 2px 12px rgba(212,175,55,0.15)',
+            transition: 'box-shadow 0.3s',
           }}
         >
+          {/* Shine sweep */}
+          <motion.span
+            initial={{ x: '-120%' }}
+            animate={{ x: '220%' }}
+            transition={{ duration: 2.4, repeat: Infinity, repeatDelay: 3, ease: 'easeInOut' }}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.28) 50%, transparent 60%)',
+              pointerEvents: 'none',
+            }}
+          />
           {t('hero.cta')}
         </motion.button>
+
+        {/* Business Hours + Est. */}
+        <motion.div
+          {...fadeUp(0.7)}
+          style={{
+            marginTop: 'clamp(2rem, 5vw, 3rem)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '10px',
+          }}
+        >
+          {/* Thin gradient divider */}
+          <div style={{
+            width: '1px',
+            height: '28px',
+            background: 'linear-gradient(to bottom, transparent, rgba(212,175,55,0.3), transparent)',
+          }} />
+
+          <BusinessHours
+            isAr={isAr}
+            arabicFont={arabicFont}
+            englishFont={englishFont}
+            isMobile={isMobile}
+          />
+
+          {/* Est. */}
+          <p style={{
+            fontSize: isMobile ? '0.72rem' : '0.65rem',
+            letterSpacing: '0.32em',
+            color: 'rgba(212,175,55,0.28)',
+            fontFamily: isAr ? arabicFont : englishFont,
+            margin: 0,
+          }}>
+            EST. 2021
+          </p>
+        </motion.div>
+
       </div>
     </section>
   )
