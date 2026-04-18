@@ -45,20 +45,19 @@ function DrawerSpices() {
   )
 }
 
-// ── Main Drawer ────────────────────────────────────────────────────────────
+// ... (بقيت الاستيرادات و DrawerSpices كما هي)
+
 export default function ItemsDrawer({ category, lang, onClose }) {
   const { t } = useTranslation()
+  const { categories } = useCategories()
 
-  const { categories } = useCategories() // جلب جميع التصنيفات للبحث عن الفرعية منها
-
-  // 1. تحديد الأقسام الفرعية التابعة لهذا القسم (مثل: دجاج، لحم تابعة لـ برجر)
   const subCategories = useMemo(() => {
     if (!category || !categories) return []
     return categories
       .filter(cat => Number(cat.parent_id) === Number(category.id))
       .sort((a, b) => a.sort_order - b.sort_order)
   }, [category, categories])
-  // 2. حالة الـ Tab النشط
+
   const [activeTabId, setActiveTabId] = useState(null)
 
   useEffect(() => {
@@ -68,32 +67,28 @@ export default function ItemsDrawer({ category, lang, onClose }) {
       setActiveTabId(null)
     }
   }, [subCategories, category])
-  // داخل مكون ItemsDrawer
+
   useEffect(() => {
     if (category) {
-      // 1. حساب عرض الـ Scrollbar لمنع اهتزاز الصفحة (Layout Shift)
       const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
-
-      // 2. تثبيت السكرول بدون تغيير الـ Position
       document.body.style.overflow = 'hidden';
-      document.body.style.paddingRight = `${scrollBarWidth}px`;
+      // نستخدم paddingRight فقط إذا كان هناك سكرول بار فعلياً
+      if (scrollBarWidth > 0) {
+        document.body.style.paddingRight = `${scrollBarWidth}px`;
+      }
     } else {
-      // 3. إعادة الوضع لطبيعته
-      document.body.style.overflow = 'unset';
-      document.body.style.paddingRight = '0px';
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
     }
-
     return () => {
-      document.body.style.overflow = 'unset';
-      document.body.style.paddingRight = '0px';
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
     };
   }, [category]);
+
   const { items, loading } = useItems(
     subCategories.length > 0 ? activeTabId : category?.id
   )
-  // 3. فلترة الأطباق بناءً على القسم الفرعي المختيار
-  const filteredItems = items
-
 
   const name = category ? (lang === 'ar' ? category.name_ar : category.name_en) : ''
 
@@ -110,36 +105,40 @@ export default function ItemsDrawer({ category, lang, onClose }) {
           <motion.div key="drawer"
             initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed top-0 right-0 bottom-0 z-[60] overflow-y-auto overflow-x-hidden"
+            className="fixed top-0 right-0 bottom-0 z-[60] overflow-y-auto"
             style={{
               width: 'min(580px, 100vw)',
               background: '#0d0d0d',
               borderLeft: '1px solid rgba(212,175,55,0.07)',
               maxWidth: '100vw',
-              overscrollBehavior: 'contain',
-              WebkitOverflowScrolling: 'touch',
+              // إضافة هذه الخصائص لمنع السكرول الجانبي في الـ Drawer نفسه
+              overflowX: 'hidden', 
+              boxSizing: 'border-box'
             }}
-            dir={lang === 'ar' ? 'rtl' : 'ltr'}
-            onTouchMove={(e) => e.stopPropagation()}>
+            dir={lang === 'ar' ? 'rtl' : 'ltr'}>
 
             <DrawerSpices />
 
-            {/* Header */}
-            <div className="sticky top-0 z-20 px-8 py-5"
-              style={{ background: 'rgba(13,13,13,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(212,175,55,0.07)' }}>
+            {/* Header - تم إضافة width: 100% و left: 0 لضمان الثبات */}
+            <div className="sticky top-0 z-[70] px-8 py-5 w-full left-0"
+              style={{ 
+                background: 'rgba(13,13,13,0.95)', 
+                backdropFilter: 'blur(16px)', 
+                borderBottom: '1px solid rgba(212,175,55,0.1)',
+                boxSizing: 'border-box' 
+              }}>
               <div className="flex items-center justify-between mb-4">
-                <div>
-                  <p className="font-body text-xs mb-0.5" style={{ color: 'rgba(212,175,55,0.45)', letterSpacing: '0.35em', fontSize: 10,fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : ''}}>
+                <div className="flex-1">
+                  <p className="font-body text-xs mb-0.5" style={{ color: 'rgba(212,175,55,0.45)', letterSpacing: '0.35em', fontSize: 10, fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : ''}}>
                     {t('categories.heading')}
                   </p>
                   <h3 className="font-display" style={{ fontSize: '1.4rem', color: 'var(--text-primary)', fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : '' }}>{name}</h3>
                 </div>
-                <button onClick={onClose} className="transition-opacity hover:opacity-50" style={{ color: 'var(--text-secondary)', fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : '' }}>
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 1l14 14M15 1L1 15" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" /></svg>
+                <button onClick={onClose} className="p-2 -mr-2 transition-opacity hover:opacity-50" style={{ color: 'var(--text-secondary)' }}>
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M1 1l14 14M15 1L1 15" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
                 </button>
               </div>
 
-              {/* الأقسام الفرعية (Tabs) داخل الـ Drawer */}
               {subCategories.length > 0 && (
                 <div className="flex gap-3 overflow-x-auto no-scrollbar py-2">
                   {subCategories.map(sub => (
@@ -162,18 +161,18 @@ export default function ItemsDrawer({ category, lang, onClose }) {
             </div>
 
             {/* Items Area */}
-            <div className="relative z-10 py-10">
+            <div className="relative z-10 py-10 w-full overflow-x-hidden">
               {loading ? (
                 <div className="flex items-center justify-center py-32">
                   <p className="font-body text-xs" style={{ color: 'var(--text-dim)', letterSpacing: '0.3em' }}>{lang === 'ar' ? 'يتم التحميل...' : 'Loading...'}</p>
                 </div>
-              ) : filteredItems.length === 0 ? (
+              ) : items.length === 0 ? (
                 <div className="flex items-center justify-center py-32">
                   <p className="font-body text-sm" style={{ color: 'var(--text-dim)' }}>{lang === 'ar' ? 'لا توجد أصناف حالياً' : 'No items available'}</p>
                 </div>
               ) : (
-                <div className="flex flex-col">
-                  {filteredItems.map((item, i) => (
+                <div className="flex flex-col w-full">
+                  {items.map((item, i) => (
                     <ItemRow key={item.id} item={item} index={i} lang={lang} t={t} />
                   ))}
                 </div>
@@ -195,34 +194,44 @@ function ItemRow({ item, index, lang, t }) {
   const [justAdded, setJustAdded] = useState(false)
 
   const getTranslation = () => {
-    if (isEven) return isRTL ? '15%' : '-15%';
-    return isRTL ? '-15%' : '15%';
+    // تقليل الإزاحة قليلاً لضمان عدم خروج الصورة بشكل مبالغ فيه يسبب سكرول
+    if (isEven) return isRTL ? '10%' : '-10%';
+    return isRTL ? '-10%' : '10%';
   }
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: isEven ? -30 : 30 }}
+      initial={{ opacity: 0, x: isEven ? -20 : 20 }}
       whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
+      viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: index * 0.05 }}
       style={{
         display: 'grid',
-        gridTemplateColumns: isEven ? '1.1fr 1fr' : '1fr 1.1fr',
+        gridTemplateColumns: isEven ? '1fr 1.1fr' : '1.1fr 1fr',
         alignItems: 'center',
-        minHeight: '240px',
-        marginBottom: '1.5rem',
+        minHeight: '220px',
+        marginBottom: '1rem',
         padding: '1rem 0',
         borderBottom: '1px solid rgba(212,175,55,0.05)',
-        overflow: 'hidden',
         width: '100%',
-        position: 'relative'
+        position: 'relative',
+        overflow: 'visible' // السماح بتداخل الصور مع الهوامش ولكن الحاوية الأب تغلقها
       }}
     >
+      {/* Image Container */}
       <div style={{ order: isEven ? 1 : 2, display: 'flex', justifyContent: 'center', position: 'relative' }}>
         <motion.img
           src={item.img_url} alt={name}
-          whileHover={{ scale: 1.08 }}
-          style={{ width: '130%', maxWidth: '320px', height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.8))', transform: `translateX(${getTranslation()})`, zIndex: 10 }}
+          whileHover={{ scale: 1.05 }}
+          style={{ 
+            width: '140%', 
+            maxWidth: '280px', 
+            height: 'auto', 
+            objectFit: 'contain', 
+            filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.7))', 
+            transform: `translateX(${getTranslation()})`, 
+            zIndex: 10 
+          }}
         />
         {item.has_steam && (
           <div style={{ position: 'absolute', bottom: '45%', left: '50%', transform: 'translateX(-50%) translateZ(0)', zIndex: 30, pointerEvents: 'none' }}>
@@ -231,30 +240,33 @@ function ItemRow({ item, index, lang, t }) {
         )}
       </div>
 
-      <div style={{ order: isEven ? 2 : 1, textAlign: isEven ? 'left' : 'right', padding: '0 15px', zIndex: 5, position: 'relative' }}>
+      {/* Content Container */}
+      <div style={{ order: isEven ? 2 : 1, textAlign: isEven ? 'left' : 'right', padding: '0 20px', zIndex: 5 }}>
         {item.is_chef_pick && (
           <p className="font-body text-[9px] uppercase tracking-widest mb-1" style={{ color: 'var(--gold)' }}>✦ {t('item.chef_pick')}</p>
         )}
         <h4 className="font-display leading-tight mb-1" style={{
-          fontSize: '1.25rem', color: 'white'
-          , fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : 'inherit'
+          fontSize: '1.15rem', color: 'white', fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : 'inherit'
         }}>{name}</h4>
-        <p className="font-body mb-4 opacity-60" style={{ fontSize: '0.8rem', lineHeight: '1.4', maxWidth: '200px', marginLeft: isEven ? 0 : 'auto', marginRight: isEven ? 'auto' : 0 }}>{desc}</p>
+        <p className="font-body mb-4 opacity-60" style={{ fontSize: '0.75rem', lineHeight: '1.4', maxWidth: '180px', marginLeft: isEven ? 0 : 'auto', marginRight: isEven ? 'auto' : 0 }}>{desc}</p>
         <div className={`flex items-center gap-3 ${isEven ? 'justify-start' : 'justify-end'}`}>
-          <span className="font-display text-gold" style={{ fontSize: '1.2rem' }}>₪{item.price}</span>
+          <span className="font-display text-gold" style={{ fontSize: '1.1rem' }}>₪{item.price}</span>
           <motion.button
             onClick={(e) => { e.stopPropagation(); addToCart(item); setJustAdded(true); setTimeout(() => setJustAdded(false), 1000); }}
-            animate={{ borderColor: justAdded ? '#4ade80' : 'rgba(212,175,55,0.3)', backgroundColor: justAdded ? 'rgba(74, 222, 128, 0.1)' : 'rgba(212,175,55,0.05)', scale: justAdded ? 1.05 : 1 }}
+            whileTap={{ scale: 0.95 }}
             className="flex items-center gap-2"
-            style={{ padding: '6px 14px', fontSize: '11px', border: '1px solid', color: justAdded ? '#4ade80' : 'var(--gold)', cursor: 'pointer', borderRadius: '4px', whiteSpace: 'nowrap' }}
+            style={{ 
+              padding: '5px 12px', 
+              fontSize: '10px', 
+              border: '1px solid', 
+              borderColor: justAdded ? '#4ade80' : 'rgba(212,175,55,0.3)',
+              backgroundColor: justAdded ? 'rgba(74, 222, 128, 0.1)' : 'rgba(212,175,55,0.05)',
+              color: justAdded ? '#4ade80' : 'var(--gold)', 
+              borderRadius: '4px',
+              fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : 'inherit'
+            }}
           >
-            {!justAdded && (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-              </svg>
-            )}
-            <span>{justAdded ? (isRTL ? 'تمت الإضافة ✓' : 'Added ✓') : (isRTL ? 'أضف للسلة' : 'Add to Cart')}</span>
+            <span>{justAdded ? (isRTL ? 'تمت الإضافة ✓' : 'Added ✓') : (isRTL ? 'أضف' : 'Add')}</span>
           </motion.button>
         </div>
       </div>
