@@ -68,9 +68,8 @@ export default function ItemsDrawer({ category, lang, onClose }) {
   // ✅ منع سكرول الخلفية بدون أي layout shift
   useEffect(() => {
     if (!category) return
-    const html = document.documentElement
-    html.style.overflow = 'hidden'
-    return () => { html.style.overflow = '' }
+    document.documentElement.classList.add('drawer-open')
+    return () => { document.documentElement.classList.remove('drawer-open') }
   }, [category])
 
   const { items, loading } = useItems(
@@ -86,8 +85,15 @@ export default function ItemsDrawer({ category, lang, onClose }) {
         <>
           <motion.div key="backdrop"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[55]"
-            style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
+            className="fixed z-[55]"
+            style={{
+              background: 'rgba(0,0,0,0.75)',
+              backdropFilter: 'blur(6px)',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100dvh',
+            }}
             onClick={onClose} />
 
           <motion.div key="drawer"
