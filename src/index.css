@@ -124,9 +124,3 @@ body {
 [dir='rtl'] * {
     letter-spacing: normal !important;
 }
-/* يوضع في ملف CSS العام */
-.fixed.inset-0, 
-[key="cart-panel"], 
-[key="drawer"] {
-  overscroll-behavior: contain; /* يمنع انتقال السكرول للعنصر الأب */
-}

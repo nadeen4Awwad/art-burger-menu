@@ -68,34 +68,17 @@ export default function ItemsDrawer({ category, lang, onClose }) {
       setActiveTabId(null)
     }
   }, [subCategories, category])
-  useEffect(() => {
-    if (category) {
-      const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.left = '0';
-      document.body.style.right = '0';
-      document.body.style.overflow = 'hidden';
-    } else {
-      const scrollY = Math.abs(parseInt(document.body.style.top || '0', 10));
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-      document.body.style.right = '';
-      document.body.style.overflow = '';
-      window.scrollTo(0, scrollY);
-    }
+  // داخل مكون ItemsDrawer
+useEffect(() => {
+  if (!category) return;
 
-    return () => {
-      const scrollY = Math.abs(parseInt(document.body.style.top || '0', 10));
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-      document.body.style.right = '';
-      document.body.style.overflow = '';
-      if (scrollY) window.scrollTo(0, scrollY);
-    };
-  }, [category]);
+  const html = document.documentElement;
+  html.style.overflow = 'hidden';
+
+  return () => {
+    html.style.overflow = '';
+  };
+}, [category]);
   const { items, loading } = useItems(
     subCategories.length > 0 ? activeTabId : category?.id
   )
@@ -126,8 +109,6 @@ export default function ItemsDrawer({ category, lang, onClose }) {
               maxWidth: '100vw',
               overscrollBehavior: 'contain',
               WebkitOverflowScrolling: 'touch',
-              willChange: 'transform',
-              contain: 'layout style paint',
             }}
             dir={lang === 'ar' ? 'rtl' : 'ltr'}
             onTouchMove={(e) => e.stopPropagation()}>
@@ -139,7 +120,7 @@ export default function ItemsDrawer({ category, lang, onClose }) {
               style={{ background: 'rgba(13,13,13,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(212,175,55,0.07)' }}>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="font-body text-xs mb-0.5" style={{ color: 'rgba(212,175,55,0.45)', letterSpacing: '0.35em', fontSize: 10, fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : '' }}>
+                  <p className="font-body text-xs mb-0.5" style={{ color: 'rgba(212,175,55,0.45)', letterSpacing: '0.35em', fontSize: 10,fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : ''}}>
                     {t('categories.heading')}
                   </p>
                   <h3 className="font-display" style={{ fontSize: '1.4rem', color: 'var(--text-primary)', fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : '' }}>{name}</h3>
