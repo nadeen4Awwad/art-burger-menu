@@ -252,7 +252,7 @@ function ItemRow({ item, index, lang, t }) {
         borderBottom: '1px solid rgba(212,175,55,0.05)',
         width: '100%',
         position: 'relative',
-        overflowX: 'hidden',
+        overflowX: 'clip',  // ← بدل hidden، clip ما بيأثر على الـ filter/shadow لعناصر الأبناء
         overflowY: 'visible',
       }}
     >
