@@ -67,9 +67,13 @@ export default function ItemsDrawer({ category, lang, onClose }) {
 
 useEffect(() => {
   if (!category) return
-  const html = document.documentElement
-  html.style.overflow = 'hidden'
-  return () => { html.style.overflow = '' }
+  const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth
+  document.documentElement.style.overflow = 'hidden'
+  document.documentElement.style.paddingRight = `${scrollBarWidth}px`
+  return () => {
+    document.documentElement.style.overflow = ''
+    document.documentElement.style.paddingRight = ''
+  }
 }, [category])
 
   const { items, loading } = useItems(
