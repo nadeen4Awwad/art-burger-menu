@@ -101,7 +101,7 @@ export default function ItemsDrawer({ category, lang, onClose }) {
           <motion.div key="drawer"
             initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed top-0 right-0 bottom-0 z-[60] overflow-y-auto overflow-x-hidden"
+            className="fixed top-0 right-0 bottom-0 z-[60] overflow-y-auto"
             style={{
               width: 'min(580px, 100vw)',
               background: '#0d0d0d',
@@ -110,6 +110,8 @@ export default function ItemsDrawer({ category, lang, onClose }) {
               overscrollBehavior: 'contain',
               WebkitOverflowScrolling: 'touch',
               minHeight: '100dvh',  // ← أضف هذا
+              overflowX: 'hidden',  // ← بدل الـ className
+              contain: 'paint',
 
             }}
             dir={lang === 'ar' ? 'rtl' : 'ltr'}
