@@ -336,9 +336,10 @@ export default function Hero({ onExplore }) {
             marginTop: 'clamp(2rem, 6vw, 3rem)',
             fontSize: fonts.cta,
             padding: '15px 56px',
-            color: '#0d0d0d',
-            border: 'none',
-            background: 'var(--gold)',
+            color: 'var(--gold)',
+            border: '1px solid rgba(212,175,55,0.4)',
+            background: 'rgba(212,175,55,0.05)',
+
             cursor: 'pointer',
             fontFamily: isAr ? arabicFont : englishFont,
             letterSpacing: '0.12em',
