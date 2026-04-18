@@ -1,11 +1,10 @@
 import { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { useItems, useCategories } from '../hooks/useData' // أضفنا useCategories
+import { useItems, useCategories } from '../hooks/useData'
 import { useCart } from '../context/CartContext'
 import SteamEffect from './SteamEffect'
 
-// ── Decorative spices (كما هي في كودك) ──────────────────
 function DrawerSpices() {
   const spices = [
     { type: 'salt', x: 8, y: 12, r: 18, s: 7, o: 0.18 },
@@ -45,20 +44,17 @@ function DrawerSpices() {
   )
 }
 
-// ── Main Drawer ────────────────────────────────────────────────────────────
 export default function ItemsDrawer({ category, lang, onClose }) {
   const { t } = useTranslation()
+  const { categories } = useCategories()
 
-  const { categories } = useCategories() // جلب جميع التصنيفات للبحث عن الفرعية منها
-
-  // 1. تحديد الأقسام الفرعية التابعة لهذا القسم (مثل: دجاج، لحم تابعة لـ برجر)
   const subCategories = useMemo(() => {
     if (!category || !categories) return []
     return categories
       .filter(cat => Number(cat.parent_id) === Number(category.id))
       .sort((a, b) => a.sort_order - b.sort_order)
   }, [category, categories])
-  // 2. حالة الـ Tab النشط
+
   const [activeTabId, setActiveTabId] = useState(null)
 
   useEffect(() => {
@@ -68,24 +64,20 @@ export default function ItemsDrawer({ category, lang, onClose }) {
       setActiveTabId(null)
     }
   }, [subCategories, category])
-  // داخل مكون ItemsDrawer
+
+  // ✅ منع سكرول الخلفية بدون أي layout shift
   useEffect(() => {
-    if (!category) return;
+    if (!category) return
+    const html = document.documentElement
+    html.style.overflow = 'hidden'
+    return () => { html.style.overflow = '' }
+  }, [category])
 
-    const html = document.documentElement;
-    html.style.overflow = 'hidden';
-
-    return () => {
-      html.style.overflow = '';
-    };
-  }, [category]);
   const { items, loading } = useItems(
     subCategories.length > 0 ? activeTabId : category?.id
   )
-  // 3. فلترة الأطباق بناءً على القسم الفرعي المختيار
+
   const filteredItems = items
-
-
   const name = category ? (lang === 'ar' ? category.name_ar : category.name_en) : ''
 
   return (
@@ -101,7 +93,7 @@ export default function ItemsDrawer({ category, lang, onClose }) {
           <motion.div key="drawer"
             initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed top-0 right-0 bottom-0 z-[60] overflow-y-auto"
+            className="fixed top-0 right-0 bottom-0 z-[60] overflow-y-auto overflow-x-hidden"
             style={{
               width: 'min(580px, 100vw)',
               background: '#0d0d0d',
@@ -109,19 +101,25 @@ export default function ItemsDrawer({ category, lang, onClose }) {
               maxWidth: '100vw',
               overscrollBehavior: 'contain',
               WebkitOverflowScrolling: 'touch',
-              minHeight: '100dvh',  // ← أضف هذا
-              overflowX: 'hidden',  // ← بدل الـ className
-              contain: 'paint',
-
+              minHeight: '100dvh',
             }}
             dir={lang === 'ar' ? 'rtl' : 'ltr'}
-            onTouchMove={(e) => e.stopPropagation()}>
-
+            onTouchMove={(e) => e.stopPropagation()}
+          >
             <DrawerSpices />
 
-            {/* Header */}
-            <div className="sticky top-0 z-20 px-8 py-5"
-              style={{ background: 'rgba(13,13,13,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(212,175,55,0.07)' }}>
+            {/* ✅ Header - z-index عالي + isolation عشان الصور ما تطلع فوقه */}
+            <div
+              className="sticky top-0 px-8 py-5"
+              style={{
+                background: 'rgba(13,13,13,0.95)',
+                backdropFilter: 'blur(16px)',
+                borderBottom: '1px solid rgba(212,175,55,0.07)',
+                zIndex: 100,           // ✅ أعلى من zIndex الصور (كانت 10)
+                isolation: 'isolate',  // ✅ يعزل الـ stacking context
+                position: 'sticky',
+              }}
+            >
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="font-body text-xs mb-0.5" style={{ color: 'rgba(212,175,55,0.45)', letterSpacing: '0.35em', fontSize: 10, fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : '' }}>
@@ -129,12 +127,25 @@ export default function ItemsDrawer({ category, lang, onClose }) {
                   </p>
                   <h3 className="font-display" style={{ fontSize: '1.4rem', color: 'var(--text-primary)', fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : '' }}>{name}</h3>
                 </div>
-                <button onClick={onClose} className="transition-opacity hover:opacity-50" style={{ color: 'var(--text-secondary)', fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : '' }}>
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 1l14 14M15 1L1 15" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" /></svg>
+                {/* ✅ زر الإغلاق واضح وقابل للكليك دايماً */}
+                <button
+                  onClick={onClose}
+                  className="transition-opacity hover:opacity-50"
+                  style={{
+                    color: 'var(--text-secondary)',
+                    position: 'relative',
+                    zIndex: 101,        // ✅ فوق كل شي
+                    padding: '8px',     // ✅ مساحة كليك أكبر
+                    margin: '-8px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M1 1l14 14M15 1L1 15" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
+                  </svg>
                 </button>
               </div>
 
-              {/* الأقسام الفرعية (Tabs) داخل الـ Drawer */}
               {subCategories.length > 0 && (
                 <div className="flex gap-3 overflow-x-auto no-scrollbar py-2">
                   {subCategories.map(sub => (
@@ -157,14 +168,18 @@ export default function ItemsDrawer({ category, lang, onClose }) {
             </div>
 
             {/* Items Area */}
-            <div className="relative z-10 py-10">
+            <div className="relative py-10" style={{ zIndex: 1 }}>
               {loading ? (
                 <div className="flex items-center justify-center py-32">
-                  <p className="font-body text-xs" style={{ color: 'var(--text-dim)', letterSpacing: '0.3em' }}>{lang === 'ar' ? 'يتم التحميل...' : 'Loading...'}</p>
+                  <p className="font-body text-xs" style={{ color: 'var(--text-dim)', letterSpacing: '0.3em' }}>
+                    {lang === 'ar' ? 'يتم التحميل...' : 'Loading...'}
+                  </p>
                 </div>
               ) : filteredItems.length === 0 ? (
                 <div className="flex items-center justify-center py-32">
-                  <p className="font-body text-sm" style={{ color: 'var(--text-dim)' }}>{lang === 'ar' ? 'لا توجد أصناف حالياً' : 'No items available'}</p>
+                  <p className="font-body text-sm" style={{ color: 'var(--text-dim)' }}>
+                    {lang === 'ar' ? 'لا توجد أصناف حالياً' : 'No items available'}
+                  </p>
                 </div>
               ) : (
                 <div className="flex flex-col">
@@ -190,8 +205,8 @@ function ItemRow({ item, index, lang, t }) {
   const [justAdded, setJustAdded] = useState(false)
 
   const getTranslation = () => {
-    if (isEven) return isRTL ? '15%' : '-15%';
-    return isRTL ? '-15%' : '15%';
+    if (isEven) return isRTL ? '15%' : '-15%'
+    return isRTL ? '-15%' : '15%'
   }
 
   return (
@@ -208,38 +223,51 @@ function ItemRow({ item, index, lang, t }) {
         marginBottom: '1.5rem',
         padding: '1rem 0',
         borderBottom: '1px solid rgba(212,175,55,0.05)',
-        overflow: 'hidden',
+        overflow: 'hidden',   // ✅ يقص الصورة اللي تطلع برا الـ row
         width: '100%',
-        position: 'relative'
+        position: 'relative',
+        isolation: 'isolate', // ✅ كل row له stacking context منفصل
       }}
     >
       <div style={{ order: isEven ? 1 : 2, display: 'flex', justifyContent: 'center', position: 'relative' }}>
         <motion.img
           src={item.img_url} alt={name}
           whileHover={{ scale: 1.08 }}
-          style={{ width: '130%', maxWidth: '320px', height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.8))', transform: `translateX(${getTranslation()})`, zIndex: 10 }}
+          style={{
+            width: '130%',
+            maxWidth: '320px',
+            height: 'auto',
+            objectFit: 'contain',
+            filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.8))',
+            transform: `translateX(${getTranslation()})`,
+            zIndex: 2,  // ✅ منخفض - ما بيطلع فوق الـ header (z-index: 100)
+          }}
         />
         {item.has_steam && (
-          <div style={{ position: 'absolute', bottom: '45%', left: '50%', transform: 'translateX(-50%) translateZ(0)', zIndex: 30, pointerEvents: 'none' }}>
+          <div style={{ position: 'absolute', bottom: '45%', left: '50%', transform: 'translateX(-50%) translateZ(0)', zIndex: 3, pointerEvents: 'none' }}>
             <SteamEffect />
           </div>
         )}
       </div>
 
-      <div style={{ order: isEven ? 2 : 1, textAlign: isEven ? 'left' : 'right', padding: '0 15px', zIndex: 5, position: 'relative' }}>
+      <div style={{ order: isEven ? 2 : 1, textAlign: isEven ? 'left' : 'right', padding: '0 15px', zIndex: 2, position: 'relative' }}>
         {item.is_chef_pick && (
           <p className="font-body text-[9px] uppercase tracking-widest mb-1" style={{ color: 'var(--gold)' }}>✦ {t('item.chef_pick')}</p>
         )}
         <h4 className="font-display leading-tight mb-1" style={{
-          fontSize: '1.25rem', color: 'white'
-          , fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : 'inherit'
+          fontSize: '1.25rem', color: 'white',
+          fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : 'inherit'
         }}>{name}</h4>
         <p className="font-body mb-4 opacity-60" style={{ fontSize: '0.8rem', lineHeight: '1.4', maxWidth: '200px', marginLeft: isEven ? 0 : 'auto', marginRight: isEven ? 'auto' : 0 }}>{desc}</p>
         <div className={`flex items-center gap-3 ${isEven ? 'justify-start' : 'justify-end'}`}>
           <span className="font-display text-gold" style={{ fontSize: '1.2rem' }}>₪{item.price}</span>
           <motion.button
-            onClick={(e) => { e.stopPropagation(); addToCart(item); setJustAdded(true); setTimeout(() => setJustAdded(false), 1000); }}
-            animate={{ borderColor: justAdded ? '#4ade80' : 'rgba(212,175,55,0.3)', backgroundColor: justAdded ? 'rgba(74, 222, 128, 0.1)' : 'rgba(212,175,55,0.05)', scale: justAdded ? 1.05 : 1 }}
+            onClick={(e) => { e.stopPropagation(); addToCart(item); setJustAdded(true); setTimeout(() => setJustAdded(false), 1000) }}
+            animate={{
+              borderColor: justAdded ? '#4ade80' : 'rgba(212,175,55,0.3)',
+              backgroundColor: justAdded ? 'rgba(74, 222, 128, 0.1)' : 'rgba(212,175,55,0.05)',
+              scale: justAdded ? 1.05 : 1
+            }}
             className="flex items-center gap-2"
             style={{ padding: '6px 14px', fontSize: '11px', border: '1px solid', color: justAdded ? '#4ade80' : 'var(--gold)', cursor: 'pointer', borderRadius: '4px', whiteSpace: 'nowrap' }}
           >
