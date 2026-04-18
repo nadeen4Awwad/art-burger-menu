@@ -21,7 +21,10 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-y: scroll; 
+  overflow-x: hidden;
 }
+
 
 body {
   background-color: var(--bg);
@@ -123,7 +126,4 @@ body {
 [dir='rtl'] .tracking-widest,
 [dir='rtl'] * {
     letter-spacing: normal !important;
-}
-html, body {
-  overflow-x: hidden;
 }
