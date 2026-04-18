@@ -256,50 +256,41 @@ function ItemRow({ item, index, lang, t }) {
         position: 'relative',
       }}
     >
-      {/* IMAGE SECTION */}
-      <div
-        style={{
-          order: isEven ? 1 : 2,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          position: 'relative',
-          width: '100%',
-          paddingTop: '18px',
-          paddingBottom: '10px',
-        }}
-      >
-        {/* 🔥 GLOW BACKGROUND (FIXED SHADOW) */}
-        <div
-          style={{
-            position: 'absolute',
-            width: '260px',
-            height: '260px',
-            background:
-              'radial-gradient(circle, rgba(212,175,55,0.08), transparent 80%)',
-            filter: 'blur(25px)',
-            transform: 'scale(1.2)',
-            zIndex: 0,
-          }}
-        />
-
-        <motion.img
-          src={item.img_url}
-          alt={name}
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.35 }}
-          style={{
-            width: '100%',
-            maxWidth: '290px',
-            height: 'auto',
-            objectFit: 'contain',
-            transform: 'scale(1.12)',
-            position: 'relative',
-            zIndex: 2,
-            pointerEvents: 'none',
-            userSelect: 'none',
-          }}
-        />
+      {/* Image */}
+     <div
+  style={{
+    order: isEven ? 1 : 2,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    overflow: 'visible',
+    width: '100%',
+    paddingTop: '18px',
+    paddingBottom: '10px',
+  }}
+>
+<motion.img
+  src={item.img_url}
+  alt={name}
+  whileHover={{ scale: 1.05 }}
+  transition={{ duration: 0.35 }}
+  style={{
+    width: '100%',
+    maxWidth: '290px',
+    height: 'auto',
+    objectFit: 'contain',
+    transform: 'scale(1.12)',
+    background: 'transparent',
+    filter: `
+      drop-shadow(0 0 12px rgba(255,255,255,0.05))
+      drop-shadow(0 12px 24px rgba(212,175,55,0.10))
+      drop-shadow(0 18px 40px rgba(255,255,255,0.04))
+    `,
+    pointerEvents: 'none',
+    userSelect: 'none',
+  }}
+/>
 
         {item.has_steam && (
           <div
@@ -309,7 +300,6 @@ function ItemRow({ item, index, lang, t }) {
               left: '50%',
               transform: 'translateX(-50%)',
               pointerEvents: 'none',
-              zIndex: 3,
             }}
           >
             <SteamEffect />
@@ -317,7 +307,7 @@ function ItemRow({ item, index, lang, t }) {
         )}
       </div>
 
-      {/* TEXT SECTION */}
+      {/* Text */}
       <div
         style={{
           order: isEven ? 2 : 1,
@@ -369,7 +359,12 @@ function ItemRow({ item, index, lang, t }) {
             isEven ? 'justify-start' : 'justify-end'
           }`}
         >
-          <span style={{ color: 'var(--gold)', fontSize: '1.2rem' }}>
+          <span
+            style={{
+              color: 'var(--gold)',
+              fontSize: '1.2rem',
+            }}
+          >
             ₪{item.price}
           </span>
 
@@ -381,6 +376,7 @@ function ItemRow({ item, index, lang, t }) {
               borderRadius: '5px',
               border: '1px solid',
               cursor: 'pointer',
+              whiteSpace: 'nowrap',
               transition: '0.25s',
               borderColor: added
                 ? '#4ade80'
@@ -404,6 +400,7 @@ function ItemRow({ item, index, lang, t }) {
     </motion.div>
   )
 }
+
 /* =========================
    Helpers
 ========================= */
