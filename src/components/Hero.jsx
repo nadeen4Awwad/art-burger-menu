@@ -123,41 +123,46 @@ const FloatingIcon = ({ x, y, delay = 0, duration = 6, icon, size = 56 }) => (
 )
 
 // ─── Business Hours ───────────────────────────────────────
-// الدوام: 11:00 صباحاً — 11:30 مساءً يومياً
+// الدوام: 11:00 صباحاً — 11:30 مساءً يومياً ما عدا الاثنين
 const OPENS = 11        // 11:00 ص
-const CLOSES = 23.5      // 11:30 م
+const CLOSES = 23.5     // 11:30 م
 
 function getStatus() {
   const now = new Date()
+  const day = now.getDay() // 0=Sun, 1=Mon, ..., 6=Sat
+  if (day === 1) return false // الاثنين مغلق طول اليوم
   const time = now.getHours() + now.getMinutes() / 60
   return time >= OPENS && time < CLOSES
 }
 
+function isToday(dayIndex) {
+  return new Date().getDay() === dayIndex
+}
+
 function BusinessHours({ isAr, arabicFont, englishFont, isMobile }) {
   const [open, setOpen] = useState(getStatus)
+  const isMonday = isToday(1)
 
-  // يعيد الحساب كل دقيقة
   useEffect(() => {
     const id = setInterval(() => setOpen(getStatus()), 60_000)
     return () => clearInterval(id)
   }, [])
 
-  const openText = isAr ? 'مفتوح الآن' : 'Open Now'
-  const closeText = isAr ? 'مغلق الآن' : 'Closed Now'
+  const openText  = isAr ? 'مفتوح الآن'  : 'Open Now'
+  const closeText = isAr ? 'مغلق الآن'   : 'Closed Now'
 
-  // سطر الأوقات
   const hoursLine = isAr
-    ? 'يومياً  ١١:٠٠ ص — ١١:٣٠ م'
-    : 'Daily  11:00 AM — 11:30 PM'
+    ? 'الأحد — السبت  ١١:٠٠ ص — ١١:٣٠ م'
+    : 'Sun — Sat  11:00 AM — 11:30 PM'
 
-  // سطر "يفتح الساعة" لما يكون مغلق
-  const opensAtLine = isAr
-    ? 'يفتح الساعة ١١:٠٠ صباحاً'
-    : 'Opens at 11:00 AM'
+  // رسالة "يفتح في" — تختلف حسب إذا كان الاثنين أو لا
+  const opensAtLine = isMonday
+    ? (isAr ? 'يفتح غداً الثلاثاء الساعة ١١:٠٠ ص' : 'Opens Tuesday at 11:00 AM')
+    : (isAr ? 'يفتح الساعة ١١:٠٠ صباحاً' : 'Opens at 11:00 AM')
 
-  const dotSize = isMobile ? '9px' : '7px'
+  const dotSize    = isMobile ? '9px'    : '7px'
   const statusSize = isMobile ? '0.9rem' : '0.72rem'
-  const hoursSize = isMobile ? '0.9rem' : '0.64rem'
+  const hoursSize  = isMobile ? '0.9rem' : '0.64rem'
 
   return (
     <motion.div
@@ -218,7 +223,8 @@ function BusinessHours({ isAr, arabicFont, englishFont, isMobile }) {
       <p style={{
         fontSize: hoursSize,
         letterSpacing: '0.14em',
-        color: 'rgba(212,175,55,0.55)', fontFamily: isAr ? arabicFont : englishFont,
+        color: 'rgba(212,175,55,0.55)',
+        fontFamily: isAr ? arabicFont : englishFont,
         margin: 0,
       }}>
         {hoursLine}
@@ -251,11 +257,14 @@ export default function Hero({ onExplore }) {
   const isAr = i18n.language === 'ar'
   const isMobile = useIsMobile()
 
-  const arabicFont = '"Cairo", sans-serif'
+  const arabicFont  = '"Cairo", sans-serif'
   const englishFont = '"Cormorant Garamond", serif'
 
   const sizes = isMobile ? ICON_SIZES.mobile : ICON_SIZES.desktop
   const fonts = isMobile ? FONT_SIZES.mobile : FONT_SIZES.desktop
+
+  // نص العطلة الأسبوعية — بدل EST. 2021
+  const offDayText = isAr ? 'عطلة أسبوعية: الاثنين' : 'Weekly Off: Monday'
 
   return (
     <section
@@ -365,7 +374,7 @@ export default function Hero({ onExplore }) {
           {t('hero.cta')}
         </motion.button>
 
-        {/* Business Hours + Est. */}
+        {/* Business Hours + Off Day */}
         <motion.div
           {...fadeUp(0.7)}
           style={{
@@ -390,15 +399,15 @@ export default function Hero({ onExplore }) {
             isMobile={isMobile}
           />
 
-          {/* Est. */}
+          {/* Weekly Off Day — بدل EST. 2021 */}
           <p style={{
             fontSize: isMobile ? '0.72rem' : '0.65rem',
-            letterSpacing: '0.32em',
+            letterSpacing: '0.22em',
             color: 'rgba(212,175,55,0.28)',
             fontFamily: isAr ? arabicFont : englishFont,
             margin: 0,
           }}>
-            EST. 2021
+            {offDayText}
           </p>
         </motion.div>
 
