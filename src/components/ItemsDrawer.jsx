@@ -69,25 +69,21 @@ export default function ItemsDrawer({ category, lang, onClose }) {
     }
   }, [subCategories, category])
   // داخل مكون ItemsDrawer
-  useEffect(() => {
-    if (category) {
-      // 1. حساب عرض الـ Scrollbar لمنع اهتزاز الصفحة (Layout Shift)
-      const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+useEffect(() => {
+  if (category) {
+    // منع السكرول بالخلفية بدون تحريك الصفحة
+    document.documentElement.style.overflow = 'hidden'
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.documentElement.style.overflow = ''
+    document.body.style.overflow = ''
+  }
 
-      // 2. تثبيت السكرول بدون تغيير الـ Position
-      document.body.style.overflow = 'hidden';
-      document.body.style.paddingRight = `${scrollBarWidth}px`;
-    } else {
-      // 3. إعادة الوضع لطبيعته
-      document.body.style.overflow = 'unset';
-      document.body.style.paddingRight = '0px';
-    }
-
-    return () => {
-      document.body.style.overflow = 'unset';
-      document.body.style.paddingRight = '0px';
-    };
-  }, [category]);
+  return () => {
+    document.documentElement.style.overflow = ''
+    document.body.style.overflow = ''
+  }
+}, [category])
   const { items, loading } = useItems(
     subCategories.length > 0 ? activeTabId : category?.id
   )
