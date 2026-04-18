@@ -257,18 +257,20 @@ function ItemRow({ item, index, lang, t }) {
       }}
     >
       {/* Image */}
-      <div
-        style={{
-          order: isEven ? 1 : 2,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          position: 'relative',
-          overflow: 'hidden',
-          width: '100%',
-        }}
-      >
-     <motion.img
+     <div
+  style={{
+    order: isEven ? 1 : 2,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    overflow: 'visible',
+    width: '100%',
+    paddingTop: '18px',
+    paddingBottom: '10px',
+  }}
+>
+<motion.img
   src={item.img_url}
   alt={name}
   whileHover={{ scale: 1.05 }}
@@ -280,11 +282,10 @@ function ItemRow({ item, index, lang, t }) {
     objectFit: 'contain',
     transform: 'scale(1.12)',
     background: 'transparent',
-    mixBlendMode: 'normal',
     filter: `
-      drop-shadow(0 10px 18px rgba(0,0,0,0.28))
-      drop-shadow(0 22px 38px rgba(0,0,0,0.42))
-      drop-shadow(0 0 12px rgba(255,255,255,0.03))
+      drop-shadow(0 0 12px rgba(255,255,255,0.05))
+      drop-shadow(0 12px 24px rgba(212,175,55,0.10))
+      drop-shadow(0 18px 40px rgba(255,255,255,0.04))
     `,
     pointerEvents: 'none',
     userSelect: 'none',
