@@ -335,19 +335,19 @@ export default function Hero({ onExplore }) {
           style={{
             marginTop: 'clamp(2rem, 6vw, 3rem)',
             fontSize: fonts.cta,
-            padding: '15px 56px',
+            padding: '14px 52px',
             color: 'var(--gold)',
-            border: '1px solid rgba(212,175,55,0.4)',
-            background: 'rgba(212,175,55,0.05)',
-
+            border: '1px solid rgba(212,175,55,0.25)',
+            background: 'transparent',
             cursor: 'pointer',
             fontFamily: isAr ? arabicFont : englishFont,
-            letterSpacing: '0.12em',
-            fontWeight: 600,
+            letterSpacing: '0.18em',
+            fontWeight: 400,
             position: 'relative',
             overflow: 'hidden',
-            boxShadow: '0 0 32px rgba(212,175,55,0.25), 0 2px 12px rgba(212,175,55,0.15)',
-            transition: 'box-shadow 0.3s',
+            borderRadius: '100px',
+            boxShadow: '0 0 24px rgba(212,175,55,0.08), inset 0 0 24px rgba(212,175,55,0.04)',
+            transition: 'all 0.4s',
           }}
         >
           {/* Shine sweep */}
