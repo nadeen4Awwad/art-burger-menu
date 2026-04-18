@@ -65,6 +65,7 @@ export default function ItemsDrawer({ category, lang, onClose }) {
     setActiveTabId(subCategories?.[0]?.id || null)
   }, [subCategories])
 
+  /* منع تحرك الصفحة */
   useEffect(() => {
     if (!category) return
 
@@ -132,31 +133,84 @@ export default function ItemsDrawer({ category, lang, onClose }) {
         >
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-xs mb-1" style={{ color: 'rgba(212,175,55,0.45)' }}>
+              <p
+                className="text-xs mb-1"
+                style={{
+                  color: 'rgba(212,175,55,0.45)',
+                  letterSpacing: '0.35em',
+                }}
+              >
                 {t('categories.heading')}
               </p>
+
               <h3 className="text-xl text-white">{title}</h3>
             </div>
 
             <button
               onClick={onClose}
-              style={{ fontSize: 20, zIndex: 200 }}
               className="p-2 hover:opacity-60"
+              style={{ color: 'var(--text-secondary)', fontSize: '20px' }}
             >
               ✕
             </button>
           </div>
+
+          {subCategories.length > 0 && (
+            <div className="flex gap-3 overflow-x-auto no-scrollbar py-2">
+              {subCategories.map(sub => {
+                const active = activeTabId === sub.id
+
+                return (
+                  <button
+                    key={sub.id}
+                    onClick={() => setActiveTabId(sub.id)}
+                    className="px-4 py-1.5 rounded-full text-[11px] whitespace-nowrap"
+                    style={{
+                      border: `1px solid ${active
+                        ? 'var(--gold)'
+                        : 'rgba(212,175,55,0.1)'
+                        }`,
+                      background: active
+                        ? 'rgba(212,175,55,0.1)'
+                        : 'transparent',
+                      color: active
+                        ? 'var(--gold)'
+                        : 'var(--text-dim)',
+                    }}
+                  >
+                    {lang === 'ar'
+                      ? sub.name_ar
+                      : sub.name_en}
+                  </button>
+                )
+              })}
+            </div>
+          )}
         </div>
 
         {/* Content */}
         <div className="py-10">
           {loading ? (
-            <CenteredText>{lang === 'ar' ? 'يتم التحميل...' : 'Loading...'}</CenteredText>
+            <CenteredText>
+              {lang === 'ar'
+                ? 'يتم التحميل...'
+                : 'Loading...'}
+            </CenteredText>
           ) : items.length === 0 ? (
-            <CenteredText>{lang === 'ar' ? 'لا توجد أصناف حالياً' : 'No items available'}</CenteredText>
+            <CenteredText>
+              {lang === 'ar'
+                ? 'لا توجد أصناف حالياً'
+                : 'No items available'}
+            </CenteredText>
           ) : (
             items.map((item, i) => (
-              <ItemRow key={item.id} item={item} index={i} lang={lang} t={t} />
+              <ItemRow
+                key={item.id}
+                item={item}
+                index={i}
+                lang={lang}
+                t={t}
+              />
             ))
           )}
         </div>
@@ -165,9 +219,6 @@ export default function ItemsDrawer({ category, lang, onClose }) {
   )
 }
 
-/* =========================
-   Item Row FIXED
-========================= */
 function ItemRow({ item, index, lang, t }) {
   const { addToCart } = useCart()
   const [added, setAdded] = useState(false)
@@ -181,6 +232,7 @@ function ItemRow({ item, index, lang, t }) {
   const handleAdd = e => {
     e.stopPropagation()
     addToCart(item)
+
     setAdded(true)
     setTimeout(() => setAdded(false), 1000)
   }
@@ -200,7 +252,8 @@ function ItemRow({ item, index, lang, t }) {
         borderBottom: '1px solid rgba(212,175,55,0.05)',
         width: '100%',
         position: 'relative',
-        overflow: 'visible', // ✅ FIX IMPORTANT
+        overflowX: 'hidden',
+        overflowY: 'visible',
       }}
     >
       {/* Image */}
@@ -210,51 +263,138 @@ function ItemRow({ item, index, lang, t }) {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          position: 'relative',
           overflow: 'visible',
+          width: '100%',
+          paddingTop: '18px',
+          paddingBottom: '10px',
         }}
       >
         <motion.img
           src={item.img_url}
           alt={name}
           whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.35 }}
           style={{
+            width: '100%',
             maxWidth: '290px',
+            height: 'auto',
+            objectFit: 'contain',
             transform: 'scale(1.12)',
+            background: 'transparent',
+            filter: `
+      drop-shadow(0 0 12px rgba(255,255,255,0.05))
+      drop-shadow(0 12px 24px rgba(212,175,55,0.10))
+      drop-shadow(0 18px 40px rgba(255,255,255,0.04))
+    `,
+            pointerEvents: 'none',
+            userSelect: 'none',
             position: 'relative',
-            zIndex: 3, // ✅ FIX SHADOW CUT
-            filter:
-              'drop-shadow(0 12px 24px rgba(212,175,55,0.15))',
+            zIndex: 3,
           }}
         />
 
         {item.has_steam && (
-          <div style={{ position: 'absolute' }}>
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '45%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              pointerEvents: 'none',
+            }}
+          >
             <SteamEffect />
           </div>
         )}
       </div>
 
       {/* Text */}
-      <div style={{ zIndex: 2 }}>
-        <h4 style={{ color: '#fff' }}>{name}</h4>
-        <p style={{ opacity: 0.6 }}>{desc}</p>
+      <div
+        style={{
+          order: isEven ? 2 : 1,
+          textAlign: isEven ? 'left' : 'right',
+          padding: '0 15px',
+          position: 'relative',
+          zIndex: 2,
+        }}
+      >
+        {item.is_chef_pick && (
+          <p
+            className="text-[10px] mb-1"
+            style={{
+              color: 'var(--gold)',
+              letterSpacing: '0.2em',
+            }}
+          >
+            ✦ {t('item.chef_pick')}
+          </p>
+        )}
 
-        <div className={`flex gap-3 ${isEven ? 'justify-start' : 'justify-end'}`}>
-          <span style={{ color: 'var(--gold)' }}>₪{item.price}</span>
+        <h4
+          style={{
+            fontSize: '1.25rem',
+            color: '#fff',
+            marginBottom: '6px',
+            fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : 'inherit',
+          }}
+        >
+          {name}
+        </h4>
+
+        <p
+          style={{
+            fontSize: '0.82rem',
+            opacity: 0.6,
+            lineHeight: 1.5,
+            marginBottom: '16px',
+            maxWidth: '220px',
+            marginLeft: isEven ? 0 : 'auto',
+            marginRight: isEven ? 'auto' : 0,
+          }}
+        >
+          {desc}
+        </p>
+
+        <div
+          className={`flex items-center gap-3 ${isEven ? 'justify-start' : 'justify-end'
+            }`}
+        >
+          <span
+            style={{
+              color: 'var(--gold)',
+              fontSize: '1.2rem',
+            }}
+          >
+            ₪{item.price}
+          </span>
 
           <button
             onClick={handleAdd}
             style={{
-              zIndex: 5, // ✅ IMPORTANT FIX
               padding: '7px 14px',
-              border: '1px solid rgba(212,175,55,0.3)',
+              fontSize: '11px',
+              borderRadius: '5px',
+              border: '1px solid',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: '0.25s',
+              borderColor: added
+                ? '#4ade80'
+                : 'rgba(212,175,55,0.3)',
               background: added
                 ? 'rgba(74,222,128,0.08)'
                 : 'rgba(212,175,55,0.05)',
               color: added ? '#4ade80' : 'var(--gold)',
             }}
           >
-            {added ? 'Added ✓' : 'Add to Cart'}
+            {added
+              ? isRTL
+                ? 'تمت الإضافة ✓'
+                : 'Added ✓'
+              : isRTL
+                ? 'أضف للسلة'
+                : 'Add to Cart'}
           </button>
         </div>
       </div>
@@ -262,6 +402,9 @@ function ItemRow({ item, index, lang, t }) {
   )
 }
 
+/* =========================
+   Helpers
+========================= */
 function CenteredText({ children }) {
   return (
     <div className="flex justify-center items-center py-32 text-sm opacity-60">
