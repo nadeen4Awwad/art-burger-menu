@@ -149,7 +149,7 @@ export default function ItemsDrawer({ category, lang, onClose }) {
             <button
               onClick={onClose}
               className="p-2 hover:opacity-60"
-              style={{ color: 'var(--text-secondary)',fontSize: '20px' }}
+              style={{ color: 'var(--text-secondary)', fontSize: '20px' }}
             >
               ✕
             </button>
@@ -166,11 +166,10 @@ export default function ItemsDrawer({ category, lang, onClose }) {
                     onClick={() => setActiveTabId(sub.id)}
                     className="px-4 py-1.5 rounded-full text-[11px] whitespace-nowrap"
                     style={{
-                      border: `1px solid ${
-                        active
+                      border: `1px solid ${active
                           ? 'var(--gold)'
                           : 'rgba(212,175,55,0.1)'
-                      }`,
+                        }`,
                       background: active
                         ? 'rgba(212,175,55,0.1)'
                         : 'transparent',
@@ -251,46 +250,47 @@ function ItemRow({ item, index, lang, t }) {
         minHeight: '240px',
         padding: '1rem 0',
         borderBottom: '1px solid rgba(212,175,55,0.05)',
-        overflow: 'hidden',
         width: '100%',
         position: 'relative',
+        overflowX: 'hidden',
+        overflowY: 'visible',
       }}
     >
       {/* Image */}
-     <div
-  style={{
-    order: isEven ? 1 : 2,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-    overflow: 'visible',
-    width: '100%',
-    paddingTop: '18px',
-    paddingBottom: '10px',
-  }}
->
-<motion.img
-  src={item.img_url}
-  alt={name}
-  whileHover={{ scale: 1.05 }}
-  transition={{ duration: 0.35 }}
-  style={{
-    width: '100%',
-    maxWidth: '290px',
-    height: 'auto',
-    objectFit: 'contain',
-    transform: 'scale(1.12)',
-    background: 'transparent',
-    filter: `
+      <div
+        style={{
+          order: isEven ? 1 : 2,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'relative',
+          overflow: 'visible',
+          width: '100%',
+          paddingTop: '18px',
+          paddingBottom: '10px',
+        }}
+      >
+        <motion.img
+          src={item.img_url}
+          alt={name}
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.35 }}
+          style={{
+            width: '100%',
+            maxWidth: '290px',
+            height: 'auto',
+            objectFit: 'contain',
+            transform: 'scale(1.12)',
+            background: 'transparent',
+            filter: `
       drop-shadow(0 0 12px rgba(255,255,255,0.05))
       drop-shadow(0 12px 24px rgba(212,175,55,0.10))
       drop-shadow(0 18px 40px rgba(255,255,255,0.04))
     `,
-    pointerEvents: 'none',
-    userSelect: 'none',
-  }}
-/>
+            pointerEvents: 'none',
+            userSelect: 'none',
+          }}
+        />
 
         {item.has_steam && (
           <div
@@ -355,9 +355,8 @@ function ItemRow({ item, index, lang, t }) {
         </p>
 
         <div
-          className={`flex items-center gap-3 ${
-            isEven ? 'justify-start' : 'justify-end'
-          }`}
+          className={`flex items-center gap-3 ${isEven ? 'justify-start' : 'justify-end'
+            }`}
         >
           <span
             style={{
@@ -392,8 +391,8 @@ function ItemRow({ item, index, lang, t }) {
                 ? 'تمت الإضافة ✓'
                 : 'Added ✓'
               : isRTL
-              ? 'أضف للسلة'
-              : 'Add to Cart'}
+                ? 'أضف للسلة'
+                : 'Add to Cart'}
           </button>
         </div>
       </div>
