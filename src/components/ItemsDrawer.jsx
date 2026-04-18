@@ -68,23 +68,34 @@ export default function ItemsDrawer({ category, lang, onClose }) {
     }
   }, [subCategories, category])
 
-  useEffect(() => {
-    if (category) {
-      const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
-      document.body.style.overflow = 'hidden';
-      // نستخدم paddingRight فقط إذا كان هناك سكرول بار فعلياً
-      if (scrollBarWidth > 0) {
-        document.body.style.paddingRight = `${scrollBarWidth}px`;
-      }
-    } else {
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
+ useEffect(() => {
+  if (category) {
+    // 1. حساب عرض السكرول بار لمنع القفزة المفاجئة (Layout Shift)
+    const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+    // 2. تثبيت الخلفية ومنع السكرول نهائياً
+    document.body.style.overflow = 'hidden';
+    document.body.style.height = '100vh'; // يضمن قفل الارتفاع
+    document.body.style.touchAction = 'none'; // يمنع سكرول اللمس في الموبايل للخلفية
+    
+    if (scrollBarWidth > 0) {
+      document.body.style.paddingRight = `${scrollBarWidth}px`;
     }
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
-    };
-  }, [category]);
+  } else {
+    // 3. إعادة كل شيء لطبيعته عند الإغلاق
+    document.body.style.overflow = '';
+    document.body.style.height = '';
+    document.body.style.touchAction = '';
+    document.body.style.paddingRight = '';
+  }
+
+  return () => {
+    document.body.style.overflow = '';
+    document.body.style.height = '';
+    document.body.style.touchAction = '';
+    document.body.style.paddingRight = '';
+  };
+}, [category]);
 
   const { items, loading } = useItems(
     subCategories.length > 0 ? activeTabId : category?.id
