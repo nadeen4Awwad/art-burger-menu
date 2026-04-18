@@ -69,16 +69,16 @@ export default function ItemsDrawer({ category, lang, onClose }) {
     }
   }, [subCategories, category])
   // داخل مكون ItemsDrawer
-useEffect(() => {
-  if (!category) return;
+  useEffect(() => {
+    if (!category) return;
 
-  const html = document.documentElement;
-  html.style.overflow = 'hidden';
+    const html = document.documentElement;
+    html.style.overflow = 'hidden';
 
-  return () => {
-    html.style.overflow = '';
-  };
-}, [category]);
+    return () => {
+      html.style.overflow = '';
+    };
+  }, [category]);
   const { items, loading } = useItems(
     subCategories.length > 0 ? activeTabId : category?.id
   )
@@ -109,6 +109,8 @@ useEffect(() => {
               maxWidth: '100vw',
               overscrollBehavior: 'contain',
               WebkitOverflowScrolling: 'touch',
+              minHeight: '100dvh',  // ← أضف هذا
+
             }}
             dir={lang === 'ar' ? 'rtl' : 'ltr'}
             onTouchMove={(e) => e.stopPropagation()}>
@@ -120,7 +122,7 @@ useEffect(() => {
               style={{ background: 'rgba(13,13,13,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(212,175,55,0.07)' }}>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="font-body text-xs mb-0.5" style={{ color: 'rgba(212,175,55,0.45)', letterSpacing: '0.35em', fontSize: 10,fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : ''}}>
+                  <p className="font-body text-xs mb-0.5" style={{ color: 'rgba(212,175,55,0.45)', letterSpacing: '0.35em', fontSize: 10, fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : '' }}>
                     {t('categories.heading')}
                   </p>
                   <h3 className="font-display" style={{ fontSize: '1.4rem', color: 'var(--text-primary)', fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : '' }}>{name}</h3>
