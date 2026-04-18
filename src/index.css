@@ -127,8 +127,3 @@ body {
 [dir='rtl'] * {
     letter-spacing: normal !important;
 }
-html.drawer-open,
-html.drawer-open body {
-  overflow: hidden;
-  height: 100%;
-}

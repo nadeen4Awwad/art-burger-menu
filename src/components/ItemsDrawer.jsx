@@ -65,12 +65,12 @@ export default function ItemsDrawer({ category, lang, onClose }) {
     }
   }, [subCategories, category])
 
-  // ✅ منع سكرول الخلفية بدون أي layout shift
-  useEffect(() => {
-    if (!category) return
-    document.documentElement.classList.add('drawer-open')
-    return () => { document.documentElement.classList.remove('drawer-open') }
-  }, [category])
+useEffect(() => {
+  if (!category) return
+  const html = document.documentElement
+  html.style.overflow = 'hidden'
+  return () => { html.style.overflow = '' }
+}, [category])
 
   const { items, loading } = useItems(
     subCategories.length > 0 ? activeTabId : category?.id
