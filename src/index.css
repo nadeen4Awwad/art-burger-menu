@@ -127,14 +127,3 @@ body {
 [dir='rtl'] * {
     letter-spacing: normal !important;
 }
-html {
-  /* هاد السطر السحري: بيحجز مكان للسكرول بار دايماً، سواء موجود أو لأ */
-  scrollbar-gutter: stable;
-  overflow-y: scroll;
-}
-
-body {
-  /* عشان نضمن إن الـ padding اللي بينضاف برمجياً ما يعمل قفزة */
-  width: 100vw;
-  overflow-x: hidden;
-}
